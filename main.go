@@ -21,7 +21,14 @@ func main() {
 	})
 
 	app.Use(logger.New())
+
+	app.Static("/assets", "./assets")
+	app.Static("/lib", "./lib")
+	app.Static("/popup", "./popup")
+
 	routes.ApiRoutes(app)
+	routes.WebRoutes(app)
+
 	app.Use(func(c *fiber.Ctx) error {
 		c.Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
 		c.Set("Pragma", "no-cache")
@@ -30,7 +37,7 @@ func main() {
 		return c.Next()
 	})
 
-	ln, _ := net.Listen("tcp", ":7632")
-	log.Fatal(app.Listener(ln))
+	listen, _ := net.Listen("tcp", ":7632")
+	log.Fatal(app.Listener(listen))
 
 }
