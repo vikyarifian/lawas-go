@@ -1,4 +1,4 @@
-module tawarin-go
+module lawas-go
 
 go 1.23
 
