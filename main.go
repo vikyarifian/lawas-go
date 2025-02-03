@@ -1,11 +1,11 @@
 package main
 
 import (
+	"lawas-go/config"
+	"lawas-go/db"
+	"lawas-go/routes"
 	"log"
 	"net"
-	"tawarin-go/config"
-	"tawarin-go/db"
-	"tawarin-go/routes"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
