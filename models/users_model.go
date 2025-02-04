@@ -9,6 +9,7 @@ type User struct {
 	Password  string     `gorm:"column:password" json:"password,omitempty" form:"password"`
 	Name      string     `gorm:"column:name" json:"name,omitempty" form:"name"`
 	Phone     string     `gorm:"column:phone;unique" json:"phone,omitempty" form:"phone"`
+	Level     string     `gorm:"column:level" json:"level,omitempty" form:"level"`
 	CreatedAt *time.Time `gorm:"column:created_at;type:TIMESTAMP NULL;default:null" json:"created_at,omitempty" form:"created_at"`
 	CreatedBy string     `gorm:"column:created_by" json:"created_by,omitempty" form:"created_by"`
 	UpdatedAt *time.Time `gorm:"column:updated_at;type:TIMESTAMP NULL;default:null" json:"updated_at,omitempty" form:"updated_at"`
@@ -22,6 +23,7 @@ type User struct {
 // 	`password` VARCHAR(128) NOT NULL,
 // 	`name` VARCHAR(75) NOT NULL,
 // 	`phone` VARCHAR(45) NOT NULL,
+// 	`level` VARCHAR(15) NOT NULL DEFAULT 'user',
 // 	`created_at` TIMESTAMP NULL DEFAULT NULL,
 // 	`created_by` VARCHAR(25) NULL DEFAULT NULL,
 // 	`updated_at` TIMESTAMP NULL DEFAULT NULL,

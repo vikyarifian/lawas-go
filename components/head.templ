@@ -1,11 +1,13 @@
 package components
 
-templ HtmlHead() {
+templ HtmlHead(title string) {
     <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>Lawas - Collectibles & More</title>
+        @HtmlTitle(title)
+        <script src="https://unpkg.com/htmx.org@2.0.1" integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/" crossorigin="anonymous"></script>
         <meta name="keywords" content="HTML5 Template">
         <meta name="description" content="Lawas - Collectibles & More">
         <meta name="author" content="p-themes">
