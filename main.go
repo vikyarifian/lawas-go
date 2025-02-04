@@ -26,9 +26,6 @@ func main() {
 	app.Static("/lib", "./lib")
 	app.Static("/popup", "./popup")
 
-	routes.ApiRoutes(app)
-	routes.WebRoutes(app)
-
 	app.Use(func(c *fiber.Ctx) error {
 		c.Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
 		c.Set("Pragma", "no-cache")
@@ -36,6 +33,9 @@ func main() {
 		c.Set("Surrogate-Control", "no-store")
 		return c.Next()
 	})
+
+	routes.ApiRoutes(app)
+	routes.WebRoutes(app)
 
 	listen, _ := net.Listen("tcp", ":7632")
 	log.Fatal(app.Listener(listen))

@@ -1,0 +1,11 @@
+package components
+
+import (
+    "fmt"
+)
+
+templ SuccessAlert(message string, form string) {
+    <div id={fmt.Sprintf("success_%s",form)} hx-swap-oob="true">
+        <label class="text-primary">{ message }</label>
+    </div>        
+}

@@ -1,0 +1,11 @@
+package components
+
+import (
+    "fmt"
+)
+
+templ ErrorAlert(message string, form string) {
+    <div id={fmt.Sprintf("error_%s",form)} hx-swap-oob="true">
+        <label class="text-danger">{ message }</label>
+    </div>        
+}
