@@ -3,7 +3,8 @@ package models
 import "time"
 
 type User struct {
-	ID        uint       `gorm:"primaryKey" json:"id,omitempty" form:"id"`
+	No        int        `gorm:"column:no;primaryKey" json:"-,omitempty" form:"-"`
+	ID        string     `gorm:"column:id;unique" json:"id,omitempty" form:"id"`
 	Username  string     `gorm:"column:username;unique" json:"username,omitempty" form:"username"`
 	Email     string     `gorm:"column:email;unique" json:"email,omitempty" form:"email"`
 	Password  string     `gorm:"column:password" json:"password,omitempty" form:"password"`
@@ -16,19 +17,33 @@ type User struct {
 	UpdatedBy string     `gorm:"column:updated_by" json:"updated_by,omitempty" form:"updated_by"`
 }
 
+// DELIMITER $$
+// CREATE TRIGGER ti_users
+// BEFORE INSERT ON users
+// FOR EACH ROW
+// BEGIN
+//   DECLARE lastid INT;
+//   SET lastid=(SELECT IFNULL(MAX(No),0)+1 FROM users);
+//   SET NEW.id = MD5(lastid);
+// END$$
+// DELIMITER ;
+
 // CREATE TABLE `db_lawas`.`users` (
-// 	`id` INT NOT NULL AUTO_INCREMENT,
+// 	`no` INT NOT NULL AUTO_INCREMENT,
+// 	`id` VARCHAR(128) NOT NULL DEFAULT '0',
 // 	`username` VARCHAR(25) NOT NULL,
 // 	`email` VARCHAR(45) NOT NULL,
 // 	`password` VARCHAR(128) NOT NULL,
 // 	`name` VARCHAR(75) NOT NULL,
 // 	`phone` VARCHAR(45) NOT NULL,
 // 	`level` VARCHAR(15) NOT NULL DEFAULT 'user',
-// 	`created_at` TIMESTAMP NULL DEFAULT NULL,
+//  `status` VARCHAR(1) NOT NULL DEFAULT 'A',
+// 	`created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
 // 	`created_by` VARCHAR(25) NULL DEFAULT NULL,
-// 	`updated_at` TIMESTAMP NULL DEFAULT NULL,
+// 	`updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
 // 	`updated_by` VARCHAR(25) NULL DEFAULT NULL,
 // 	PRIMARY KEY (`id`),
+// 	UNIQUE INDEX `no_UNIQUE` (`no` ASC) VISIBLE,
 // 	UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
 // 	UNIQUE INDEX `username_UNIQUE` (`username` ASC) VISIBLE,
 // 	UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE,

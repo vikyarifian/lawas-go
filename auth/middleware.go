@@ -22,8 +22,8 @@ func IsAuthenticated(c *fiber.Ctx) (dto.Token, bool) {
 
 func AssertAuthenticatedMiddleware(c *fiber.Ctx) error {
 	if _, r := IsAuthenticated(c); !r {
-		c.Set("HX-Redirect", "/login")
-		return c.Redirect("/login")
+		c.Set("HX-Redirect", "/401")
+		return c.Redirect("/401")
 	}
 	return c.Next()
 }

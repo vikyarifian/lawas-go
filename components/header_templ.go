@@ -10,6 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"lawas-go/dto"
+	"strconv"
 )
 
 func HtmlHeader(token dto.Token, isLoggedIn bool) templ.Component {
@@ -38,17 +39,111 @@ func HtmlHeader(token dto.Token, isLoggedIn bool) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if isLoggedIn {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<li><div class=\"header-dropdown\"><a href=\"#\"><i class=\"icon-user\"></i> Account</a><div class=\"header-menu\"><ul><li><a href=\"#\">Profile</a></li><li><a href=\"#\">Setting</a></li><li><a href=\"/logout\">Logout</a></li></ul></div><!-- End .header-menu --></div></li>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<li><div class=\"header-dropdown\"><a href=\"#\"><i class=\"icon-user\"></i> ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var2 string
+			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(token.Name)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/header.templ`, Line: 25, Col: 93}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a><div class=\"header-menu\"><ul><li><a href=\"/dashboard\">My Account</a></li><li><a href=\"#\">Setting</a></li><li><a href=\"/logout\">Logout</a></li></ul></div><!-- End .header-menu --></div></li>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<li style=\"height:4rem;\"><div class=\"\" style=\"padding-top:1rem\"><a href=\"#signin-modal\" data-toggle=\"modal\">Sign in / Sign up</a></div></li>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<li style=\"height:4rem;\"><div class=\"\" style=\"padding-top:1rem\"><a href=\"#signin-modal\" data-toggle=\"modal\">Sign in / Sign up</a></div></li>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</ul></li></ul><!-- End .top-menu --></div><!-- End .header-right --></div><!-- End .container --></div><!-- End .header-top --><div class=\"header-middle\"><div class=\"container\"><div class=\"header-left\"><button class=\"mobile-menu-toggler\"><span class=\"sr-only\">Toggle mobile menu</span> <i class=\"icon-bars\"></i></button> <a href=\"index.html\" class=\"logo\"><img src=\"/assets/images/demos/demo-4/logo.png\" alt=\"Lawas Logo\" width=\"105\" height=\"25\"></a></div><!-- End .header-left --><div class=\"header-center\"><div class=\"header-search header-search-extended header-search-visible d-none d-lg-block\"><a href=\"#\" class=\"search-toggle\" role=\"button\"><i class=\"icon-search\"></i></a><form action=\"#\" method=\"get\"><div class=\"header-search-wrapper search-wrapper-wide\"><label for=\"q\" class=\"sr-only\">Search</label> <button class=\"btn btn-primary\" type=\"submit\"><i class=\"icon-search\"></i></button> <input type=\"search\" class=\"form-control\" name=\"q\" id=\"q\" placeholder=\"Search item ...\" required></div><!-- End .header-search-wrapper --></form></div><!-- End .header-search --></div><div class=\"header-right\"><div class=\"dropdown compare-dropdown\"><a href=\"#\" class=\"dropdown-toggle\" role=\"button\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\" data-display=\"static\" title=\"Compare Products\" aria-label=\"Compare Products\"><div class=\"icon\"><i class=\"la la-money\"></i></div><p>Sell</p></a></div><!-- End .compare-dropdown --><div class=\"wishlist\"><a href=\"wishlist.html\" title=\"Bid\"><div class=\"icon\"><i class=\"la la-hand-paper-o\"></i><!-- la la-gavel --><span class=\"wishlist-count badge\">3</span></div><p>Bid</p></a></div><!-- End .compare-dropdown --><div class=\"wishlist\"><a href=\"wishlist.html\" title=\"Watchlist\"><div class=\"icon\"><i class=\"icon-heart-o\"></i> <span class=\"wishlist-count badge\">3</span></div><p>Watchlist</p></a></div><!-- End .compare-dropdown --></div><!-- End .header-right --></div><!-- End .container --></div><!-- End .header-middle -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</ul></li></ul><!-- End .top-menu --></div><!-- End .header-right --></div><!-- End .container --></div><!-- End .header-top --><div class=\"header-middle\"><div class=\"container\"><div class=\"header-left\"><button class=\"mobile-menu-toggler\"><span class=\"sr-only\">Toggle mobile menu</span> <i class=\"icon-bars\"></i></button> <a href=\"/\" class=\"logo\"><img src=\"/assets/images/demos/demo-4/logo.png\" alt=\"Lawas Logo\" width=\"105\" height=\"25\"></a></div><!-- End .header-left --><div class=\"header-center\"><div class=\"header-search header-search-extended header-search-visible d-none d-lg-block\"><a href=\"#\" class=\"search-toggle\" role=\"button\"><i class=\"icon-search\"></i></a><form action=\"#\" method=\"get\"><div class=\"header-search-wrapper search-wrapper-wide\"><label for=\"q\" class=\"sr-only\">Search</label> <button class=\"btn btn-primary\" type=\"submit\"><i class=\"icon-search\"></i></button> <input type=\"search\" class=\"form-control\" name=\"q\" id=\"q\" placeholder=\"Search item ...\" required></div><!-- End .header-search-wrapper --></form></div><!-- End .header-search --></div><div class=\"header-right\"><div class=\"wishlist\"><a href=\"#\" title=\"Sell\"><div class=\"icon\"><i class=\"la la-money\"></i> ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if isLoggedIn {
+			for _, a := range token.Notifications {
+				if a.Code == "SELL" && a.Count > 0 {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<span class=\"wishlist-count badge\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var3 string
+					templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(a.Count))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/header.templ`, Line: 129, Col: 70}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</span>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div><p>Sell</p></a></div><!-- End .compare-dropdown --><div class=\"wishlist\"><a href=\"/bids\" title=\"Bid\"><div class=\"icon\"><i class=\"la la-hand-paper-o\"></i><!-- la la-gavel -->")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if isLoggedIn {
+			for _, a := range token.Notifications {
+				if a.Code == "BID" && a.Count > 0 {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<span class=\"wishlist-count badge\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var4 string
+					templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(a.Count))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/header.templ`, Line: 147, Col: 70}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</span>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div><p>Bid</p></a></div><!-- End .compare-dropdown --><div class=\"wishlist\"><a href=\"/wishlist\" title=\"Watchlist\"><div class=\"icon\"><i class=\"icon-heart-o\"></i> ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if isLoggedIn {
+			for _, a := range token.Notifications {
+				if a.Code == "WATCH" && a.Count > 0 {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span class=\"wishlist-count badge\">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					var templ_7745c5c3_Var5 string
+					templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(a.Count))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/header.templ`, Line: 165, Col: 70}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</span>")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div><p>Watchlist</p></a></div><!-- End .compare-dropdown --></div><!-- End .header-right --></div><!-- End .container --></div><!-- End .header-middle -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -56,7 +151,7 @@ func HtmlHeader(token dto.Token, isLoggedIn bool) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</header><!-- End .header -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</header><!-- End .header -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
