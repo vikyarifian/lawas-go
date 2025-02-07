@@ -2,6 +2,7 @@ package components
 
 import (
     "lawas-go/dto"
+    "strconv"
 )
 
 templ HtmlHeader(token dto.Token, isLoggedIn bool) {
@@ -21,10 +22,10 @@ templ HtmlHeader(token dto.Token, isLoggedIn bool) {
                                 if isLoggedIn {
                                     <li>
                                         <div class="header-dropdown">                                        
-                                            <a href="#"><i class="icon-user"></i> Account</a>
+                                            <a href="#"><i class="icon-user"></i> {token.Name}</a>
                                             <div class="header-menu">
                                                 <ul>
-                                                    <li><a href="#">Profile</a></li>
+                                                    <li><a href="/dashboard">My Account</a></li>
                                                     <li><a href="#">Setting</a></li>
                                                     <li><a href="/logout">Logout</a></li>
                                                 </ul>
@@ -62,7 +63,7 @@ templ HtmlHeader(token dto.Token, isLoggedIn bool) {
                         <i class="icon-bars"></i>
                     </button>
                     
-                    <a href="index.html" class="logo">
+                    <a href="/" class="logo">
                         <img src="/assets/images/demos/demo-4/logo.png" alt="Lawas Logo" width="105" height="25">
                     </a>
                 </div><!-- End .header-left -->
@@ -81,48 +82,91 @@ templ HtmlHeader(token dto.Token, isLoggedIn bool) {
                 </div>
 
                 <div class="header-right">
-                    <div class="dropdown compare-dropdown">
-                        <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Compare Products" aria-label="Compare Products">
+                    // <div class="dropdown compare-dropdown">
+                    //     <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static" title="Compare Products" aria-label="Compare Products">
+                    //         <div class="icon">
+                    //             <i class="la la-money"></i>
+                    //             if isLoggedIn {
+                    //                 <span class="wishlist-count badge">
+                    //                     for _,a := range token.Notifications {
+                    //                         if a.Code == "SELL" {
+                    //                             {strconv.Itoa(a.Count)}
+                    //                         }
+                    //                     }
+                    //                 </span>
+                    //             }
+                    //         </div>
+                    //         <p>Sell</p>
+                    //     </a>
+
+                    //     // <div class="dropdown-menu dropdown-menu-right">
+                    //     //     <ul class="compare-products">
+                    //     //         <li class="compare-product">
+                    //     //             <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
+                    //     //             <h4 class="compare-product-title"><a href="product.html">Blue Night Dress</a></h4>
+                    //     //         </li>
+                    //     //         <li class="compare-product">
+                    //     //             <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
+                    //     //             <h4 class="compare-product-title"><a href="product.html">White Long Skirt</a></h4>
+                    //     //         </li>
+                    //     //     </ul>
+
+                    //     //     <div class="compare-actions">
+                    //     //         <a href="#" class="action-link">Clear All</a>
+                    //     //         <a href="#" class="btn btn-outline-primary-2"><span>Compare</span><i class="icon-long-arrow-right"></i></a>
+                    //     //     </div>
+                    //     // </div><!-- End .dropdown-menu -->
+                    // </div><!-- End .compare-dropdown -->
+
+                    <div class="wishlist">
+                        <a href="#" title="Sell">
                             <div class="icon">
                                 <i class="la la-money"></i>
+                                if isLoggedIn {                                    
+                                    for _,a := range token.Notifications {
+                                        if a.Code == "SELL" && a.Count > 0 {
+                                            <span class="wishlist-count badge">
+                                                {strconv.Itoa(a.Count)}
+                                            </span>
+                                        }
+                                    }
+                                }
                             </div>
                             <p>Sell</p>
                         </a>
-
-                        // <div class="dropdown-menu dropdown-menu-right">
-                        //     <ul class="compare-products">
-                        //         <li class="compare-product">
-                        //             <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                        //             <h4 class="compare-product-title"><a href="product.html">Blue Night Dress</a></h4>
-                        //         </li>
-                        //         <li class="compare-product">
-                        //             <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                        //             <h4 class="compare-product-title"><a href="product.html">White Long Skirt</a></h4>
-                        //         </li>
-                        //     </ul>
-
-                        //     <div class="compare-actions">
-                        //         <a href="#" class="action-link">Clear All</a>
-                        //         <a href="#" class="btn btn-outline-primary-2"><span>Compare</span><i class="icon-long-arrow-right"></i></a>
-                        //     </div>
-                        // </div><!-- End .dropdown-menu -->
                     </div><!-- End .compare-dropdown -->
 
                     <div class="wishlist">
-                        <a href="wishlist.html" title="Bid">
+                        <a href="/bids" title="Bid">
                             <div class="icon">
                                 <i class="la la-hand-paper-o"></i><!-- la la-gavel -->
-                                <span class="wishlist-count badge">3</span>
+                                if isLoggedIn {                                    
+                                    for _,a := range token.Notifications {
+                                        if a.Code == "BID" && a.Count > 0 {
+                                            <span class="wishlist-count badge">
+                                                {strconv.Itoa(a.Count)}
+                                            </span>
+                                        }
+                                    }
+                                }
                             </div>
                             <p>Bid</p>
                         </a>
                     </div><!-- End .compare-dropdown -->
 
                     <div class="wishlist">
-                        <a href="wishlist.html" title="Watchlist">
+                        <a href="/wishlist" title="Watchlist">
                             <div class="icon">
                                 <i class="icon-heart-o"></i>
-                                <span class="wishlist-count badge">3</span>
+                                if isLoggedIn {                                    
+                                    for _,a := range token.Notifications {
+                                        if a.Code == "WATCH" && a.Count > 0 {
+                                            <span class="wishlist-count badge">
+                                                {strconv.Itoa(a.Count)}
+                                            </span>
+                                        }
+                                    }
+                                }
                             </div>
                             <p>Watchlist</p>
                         </a>

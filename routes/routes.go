@@ -1,9 +1,11 @@
 package routes
 
 import (
+	"fmt"
 	"lawas-go/auth"
 	"lawas-go/components"
 	"lawas-go/db"
+	"lawas-go/dto"
 	"lawas-go/models"
 	"lawas-go/pages"
 	"lawas-go/utils"
@@ -15,6 +17,7 @@ import (
 	"github.com/a-h/templ"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 func ApiRoutes(app *fiber.App) {
@@ -33,36 +36,98 @@ func WebRoutes(app *fiber.App) {
 		return utils.Render(c, pages.Frontpage(auth.IsAuthenticated(c)))
 	})
 
+	app.Get("/401", func(c *fiber.Ctx) error {
+		return utils.Render(c, pages.Forbidden(auth.IsAuthenticated(c)))
+	})
+
+	app.Get("/dashboard", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		return utils.Render(c, pages.Dashboard(auth.IsAuthenticated(c)))
+	})
+
+	app.Get("/my-sells", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		var sells []models.Item
+		var token dto.Token
+		var user models.User
+		token, _ = auth.IsAuthenticated(c)
+		db.MySql.First(&user, "username=?", token.Username)
+		db.MySql.Where("user_id=?", user.ID).Preload("User").Preload("Bids").Preload("Category").Find(&sells)
+		for _, sell := range sells {
+			fmt.Println(sell.User.Username)
+		}
+		return utils.Render(c, pages.TabSell(sells))
+	})
+
+	app.Get("/my-bids", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		var bids []models.Bid
+		var token dto.Token
+		var user models.User
+		token, _ = auth.IsAuthenticated(c)
+		db.MySql.First(&user, "username=?", token.Username)
+		db.MySql.Where("user_id=?", user.ID).Preload("Item", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Category").Preload("Bids").Preload("User")
+		}).Find(&bids)
+		for _, sell := range bids {
+			fmt.Println(sell.User.Username)
+		}
+		return utils.Render(c, pages.TabBid(bids))
+	})
+
 	app.Post("/register", func(c *fiber.Ctx) error {
 
-		var user models.User
+		var users []models.User
+		var newUser models.User
 		var count int64
 		username := c.FormValue("username")
 		email := c.FormValue("email")
 		phone := c.FormValue("phone")
 		password := c.FormValue("password")
-		err := db.MySql.Model(&user).Where("username=? or email=?", username, email).Count(&count).Error
+		err := db.MySql.Where("username=? or email=? or phone=?", username, email, phone).Find(&users).Count(&count).Error
 		if err != nil {
 			return utils.Render(c, components.ErrorAlert(err.Error(), "register"), templ.WithStatus(http.StatusBadRequest))
 		}
 		if count > 0 {
-			return utils.Render(c, components.ErrorAlert("Username or Email already exist!", "register"), templ.WithStatus(http.StatusBadRequest))
+			msg := ""
+			for _, user := range users {
+				if strings.Trim(user.Username, " ") == strings.Trim(username, " ") {
+					if msg != "" {
+						msg = msg + ", "
+					}
+					msg = "Username"
+				}
+				if strings.Trim(user.Email, " ") == strings.Trim(email, " ") {
+					if msg != "" {
+						msg = msg + ", "
+					}
+					msg = msg + "Email"
+				}
+				if strings.Trim(user.Phone, " ") == strings.Trim(phone, " ") {
+					if msg != "" {
+						msg = msg + ", "
+					}
+					msg = msg + "Phone"
+				}
+			}
+
+			return utils.Render(c, components.ErrorAlert(msg+" already exist!", "register"), templ.WithStatus(http.StatusBadRequest))
 		}
 
+		if len(strings.Trim(password, " ")) < 6 {
+			return utils.Render(c, components.ErrorAlert("Password must be at least 6 characters!", "register"), templ.WithStatus(http.StatusBadRequest))
+		}
 		t := time.Now()
 		hash, _ := auth.HashPassword(password)
-		user.Username = username
-		user.Password = string(hash)
-		user.Name = username
-		user.Email = email
-		user.Phone = phone
-		user.Level = "user"
-		user.CreatedAt = &t
-		user.CreatedBy = user.Username
-		user.UpdatedAt = &t
-		user.UpdatedBy = user.Username
+		newUser.Username = username
+		newUser.Password = string(hash)
+		newUser.Name = username
+		newUser.Email = email
+		newUser.Phone = phone
+		newUser.Level = "user"
+		newUser.CreatedAt = &t
+		newUser.CreatedBy = newUser.Username
+		newUser.UpdatedAt = &t
+		newUser.UpdatedBy = newUser.Username
 
-		err = db.MySql.Save(&user).Error
+		err = db.MySql.Save(&newUser).Error
 		if err != nil {
 			return utils.Render(c, components.ErrorAlert(err.Error(), "register"), templ.WithStatus(http.StatusBadRequest))
 		}

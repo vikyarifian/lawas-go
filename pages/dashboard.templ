@@ -1,0 +1,277 @@
+package pages
+
+import (
+    "lawas-go/dto"
+    "lawas-go/models"
+    "lawas-go/components"
+    "strconv"
+)
+
+templ Dashboard(token dto.Token, isLoggedIn bool) {
+
+    @components.Layout(token, isLoggedIn, "My Account") {
+        <div class="container">
+            <div class="intro-slider-container  mb-1" style="height: fit-content;">
+                // <div class="col-lg-8">
+                    <div class="header-4 page-header text-center" style="background-image: url('assets/images/page-header-bg.jpg')">
+                        <div class="container">
+                            <h1 class="page-title">My Account</h1>
+                        </div><!-- End .container -->
+                    </div><!-- End .page-header -->
+                // </div>
+            </div>            
+        </div>  
+        <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+            <div class="container">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">My Account</li>
+                </ol>
+            </div><!-- End .container -->
+        </nav><!-- End .breadcrumb-nav -->
+
+        <div class="page-content">
+            <div class="dashboard">
+                <div class="container">
+                    <div class="row">
+                        <aside class="col-md-4 col-lg-3">
+                            <ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="tab-dashboard-link" data-toggle="tab" href="#tab-dashboard" role="tab" aria-controls="tab-dashboard" aria-selected="true">Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="tab-sells-link" data-toggle="tab" href="#tab-sells" 
+                                        role="tab" aria-controls="tab-sells" aria-selected="false"
+                                        hx-get="/my-sells"               
+                                        hx-swap="innerHtml"
+                                        hx-target="#tab-sells"
+                                        hx-indicator=".htmx-loader"
+                                    >Sells</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="tab-bids-link" data-toggle="tab" href="#tab-bids" role="tab" aria-controls="tab-bids" aria-selected="false"
+                                        hx-get="/my-bids"               
+                                        hx-swap="innerHtml"
+                                        hx-target="#tab-bids"
+                                        hx-indicator=".htmx-loader"
+                                    >Bids</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account" role="tab" aria-controls="tab-account" aria-selected="false">Account Details</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/logout">Sign Out</a>
+                                </li>
+                            </ul>
+                        </aside><!-- End .col-lg-3 -->
+
+                        <div class="col-md-8 col-lg-9">
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link">
+                                    <p>Hello <span class="font-weight-normal text-dark">{token.Name}</span> (not <span class="font-weight-normal text-dark">{token.Name}</span>? <a href="#">Log out</a>) 
+                                    <br>
+                                    From your account dashboard you can view your <a href="#tab-sells" class="tab-trigger-link link-underline">recent bids & offers</a>, manage your <a href="#tab-address" class="tab-trigger-link">shipping and billing addresses</a>, and <a href="#tab-account" class="tab-trigger-link">edit your password and account details</a>.</p>
+                                </div><!-- .End .tab-pane -->
+
+                                <div class="tab-pane fade" id="tab-sells" role="tabpanel" aria-labelledby="tab-sells-link">
+                                    <p>No sells available yet.</p>
+                                    <a href="/sell" class="btn btn-outline-primary-2"><span>GO SELL</span><i class="icon-long-arrow-right"></i></a>
+                                </div><!-- .End .tab-pane -->
+
+                                <div class="tab-pane fade" id="tab-bids" role="tabpanel" aria-labelledby="tab-bids-link">
+                                    <p>No bid has been made yet.</p>
+                                    <a href="/bid" class="btn btn-outline-primary-2"><span>GO BID</span><i class="icon-long-arrow-right"></i></a>
+                                </div><!-- .End .tab-pane -->
+
+                                <div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
+                                    <p>The following addresses will be used on the checkout page by default.</p>
+
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="card card-dashboard">
+                                                <div class="card-body">
+                                                    <h3 class="card-title">Billing Address</h3><!-- End .card-title -->
+
+                                                    <p>User Name<br>
+                                                    User Company<br>
+                                                    John str<br>
+                                                    New York, NY 10001<br>
+                                                    1-234-987-6543<br>
+                                                    yourmail@mail.com<br>
+                                                    <a href="#">Edit <i class="icon-edit"></i></a></p>
+                                                </div><!-- End .card-body -->
+                                            </div><!-- End .card-dashboard -->
+                                        </div><!-- End .col-lg-6 -->
+
+                                        <div class="col-lg-6">
+                                            <div class="card card-dashboard">
+                                                <div class="card-body">
+                                                    <h3 class="card-title">Shipping Address</h3><!-- End .card-title -->
+
+                                                    <p>You have not set up this type of address yet.<br>
+                                                    <a href="#">Edit <i class="icon-edit"></i></a></p>
+                                                </div><!-- End .card-body -->
+                                            </div><!-- End .card-dashboard -->
+                                        </div><!-- End .col-lg-6 -->
+                                    </div><!-- End .row -->
+                                </div><!-- .End .tab-pane -->
+
+                                <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
+                                    <form action="#">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <label>First Name *</label>
+                                                <input type="text" class="form-control" required>
+                                            </div><!-- End .col-sm-6 -->
+
+                                            <div class="col-sm-6">
+                                                <label>Last Name *</label>
+                                                <input type="text" class="form-control" required>
+                                            </div><!-- End .col-sm-6 -->
+                                        </div><!-- End .row -->
+
+                                        <label>Display Name *</label>
+                                        <input type="text" class="form-control" required>
+                                        <small class="form-text">This will be how your name will be displayed in the account section and in reviews</small>
+
+                                        <label>Email address *</label>
+                                        <input type="email" class="form-control" required>
+
+                                        <label>Current password (leave blank to leave unchanged)</label>
+                                        <input type="password" class="form-control">
+
+                                        <label>New password (leave blank to leave unchanged)</label>
+                                        <input type="password" class="form-control">
+
+                                        <label>Confirm new password</label>
+                                        <input type="password" class="form-control mb-2">
+
+                                        <button type="submit" class="btn btn-outline-primary-2">
+                                            <span>SAVE CHANGES</span>
+                                            <i class="icon-long-arrow-right"></i>
+                                        </button>
+                                    </form>
+                                </div><!-- .End .tab-pane -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+templ TabSell(sells []models.Item) {
+    if len(sells) == 0 {
+        <p>No sells available yet.</p>
+        <a href="/sell" class="btn btn-outline-primary-2"><span>GO SELL</span><i class="icon-long-arrow-right"></i></a>
+    } else {
+        // <div class="container">
+            for _, sell := range sells {
+                <article class="entry entry-list">
+                        <div class="row align-items-center">
+                            <div class="col-md-2">
+                                <figure class="entry-media">
+                                    <a href="#">
+                                        <img src={sell.Photo} alt={sell.Name} style="max-width: fit-content; ">
+                                    </a>
+                                </figure><!-- End .entry-media -->
+                            </div><!-- End .col-md-4 -->
+                            <div class="col-md-7">
+                                <div class="entry-body">
+                                    <h2 class="entry-title">
+                                        <a href="/">{sell.Name}</a>
+                                    </h2><!-- End .entry-title -->
+
+                                    <div class="entry-meta">
+                                        <span class="entry-author">
+                                            by <a href="#">{sell.User.Username}</a>
+                                        </span>
+                                        <span class="meta-separator">|</span>
+                                        <a href="#">{sell.Date.Format("January, 02 2006")}</a>
+                                        <span class="meta-separator">|</span>
+                                        <a href="#">{strconv.Itoa(len(sell.Bids))} Bids</a>
+                                    </div><!-- End .entry-meta -->
+
+                                    <div class="entry-cats">
+                                        in <a href="#">{sell.Category.Name}</a>
+                                    </div><!-- End .entry-cats -->
+
+                                    <div class="entry-content">
+                                        <p>
+                                            if len(sell.Description) > 100 {
+                                                {sell.Description[0:100]} ...
+                                            } else {
+                                                {sell.Description}
+                                            }
+                                        </p>
+                                        // <a href="/" class="read-more">Continue</a>
+                                    </div><!-- End .entry-content -->
+                                </div><!-- End .entry-body -->
+                            </div><!-- End .col-md-8 -->
+                        </div>
+                </article>
+            }
+        // </div>
+    }
+    
+}
+
+templ TabBid(bids []models.Bid) {
+    if len(bids) == 0 {
+        <p>No bid has been made yet.</p>
+        <a href="/bid" class="btn btn-outline-primary-2"><span>GO BID</span><i class="icon-long-arrow-right"></i></a>
+    } else {
+        // <div class="container">
+            for _, bid := range bids {
+                <article class="entry entry-list">
+                        <div class="row align-items-center">
+                            <div class="col-md-2">
+                                <figure class="entry-media">
+                                    <a href="#">
+                                        <img src={bid.Item.Photo} alt={bid.Item.Name} style="max-width: fit-content; ">
+                                    </a>
+                                </figure><!-- End .entry-media -->
+                            </div><!-- End .col-md-4 -->
+                            <div class="col-md-7">
+                                <div class="entry-body">
+                                    <h2 class="entry-title">
+                                        <a href="/">{bid.Item.Name}</a>
+                                    </h2><!-- End .entry-title -->
+
+                                    <div class="entry-meta">
+                                        <span class="entry-author">
+                                            by <a href="#">{bid.Item.User.Username}</a>
+                                        </span>
+                                        <span class="meta-separator">|</span>
+                                        <a href="#">{bid.Item.Date.Format("January, 02 2006")}</a>
+                                        <span class="meta-separator">|</span>
+                                        <a href="#">{strconv.Itoa(len(bid.Item.Bids))} Bids</a>
+                                    </div><!-- End .entry-meta -->
+
+                                    <div class="entry-cats">
+                                        in <a href="#">{bid.Item.Category.Name}</a>
+                                    </div><!-- End .entry-cats -->
+
+                                    <div class="entry-content">
+                                        <p>
+                                            if len(bid.Item.Description) > 100 {
+                                                {bid.Item.Description[0:100]} ... 
+                                            } else {
+                                                {bid.Item.Description}
+                                            } 
+                                        </p>
+                                        // <a href="/" class="read-more">Continue</a>
+                                    </div><!-- End .entry-content -->
+                                </div><!-- End .entry-body -->
+                            </div><!-- End .col-md-8 -->
+                        </div>
+                </article>
+            }
+        // </div>
+    }
+    
+}

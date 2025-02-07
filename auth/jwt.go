@@ -2,6 +2,7 @@ package auth
 
 import (
 	"fmt"
+	"lawas-go/db"
 	"lawas-go/dto"
 	"lawas-go/models"
 	"time"
@@ -44,12 +45,38 @@ func GetToken(c *fiber.Ctx) (dto.Token, error) {
 		return token, err
 	}
 
+	var items []models.Item
+	var bids []models.Bid
+	var watchs []models.Watchlist
+	var user models.User
+	var notif []dto.Notification
+	db.MySql.Find(&user, "username=? AND status='A'", fmt.Sprintf("%s", claims["username"]))
+	db.MySql.Find(&items, "user_id=? AND (date + interval duration day) > now()", user.ID)
+	db.MySql.Find(&bids, "user_id=? AND item_id in (SELECT id FROM items WHERE (date + interval duration day) > now())", user.ID)
+	db.MySql.Find(&watchs, "user_id=? AND item_id in (SELECT id FROM items WHERE (date + interval duration day) > now())", user.ID)
+	notif = append(notif, dto.Notification{
+		Code:  "SELL",
+		Name:  "Sells",
+		Count: len(items),
+	})
+	notif = append(notif, dto.Notification{
+		Code:  "BID",
+		Name:  "Bids",
+		Count: len(bids),
+	})
+	notif = append(notif, dto.Notification{
+		Code:  "WATCH",
+		Name:  "Watchlist",
+		Count: len(watchs),
+	})
+
 	return dto.Token{
-		Username: fmt.Sprintf("%s", claims["username"]),
-		Name:     cases.Title(language.English, cases.Compact).String(fmt.Sprintf("%s", claims["name"])),
-		Email:    fmt.Sprintf("%s", claims["email"]),
-		Level:    fmt.Sprintf("%s", claims["level"]),
-		Token:    c.Get("Authorization"),
+		Username:      fmt.Sprintf("%s", claims["username"]),
+		Name:          cases.Title(language.English, cases.Compact).String(fmt.Sprintf("%s", claims["name"])),
+		Email:         fmt.Sprintf("%s", claims["email"]),
+		Level:         fmt.Sprintf("%s", claims["level"]),
+		Token:         c.Get("Authorization"),
+		Notifications: notif,
 	}, nil
 }
 

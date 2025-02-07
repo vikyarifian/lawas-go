@@ -28,6 +28,7 @@ templ HtmlSignup() {
                                         hx-swap="none"
                                         hx-on::before-request="document.getElementById('error_login').innerHTML = ''"
                                         hx-target-400="#error_login"
+                                        hx-indicator=".htmx-loader"
                                     >
                                         <div class="form-group">
                                             <label for="singin-username">Username or email *</label>
@@ -53,11 +54,15 @@ templ HtmlSignup() {
                                 <div class="tab-pane fade" id="register" role="tabpanel" aria-labelledby="register-tab">
                                     <form id="register-form"
                                         hx-disabled-elt="#register-button"
-                                        hx-post="/register"               
-                                        hx-indicator="find .htmx-indicator"
+                                        hx-post="/register"
                                         hx-swap="none"
                                         hx-on::before-request="document.getElementById('error_register').innerHTML = ''"
+                                        hx-on::after-request="if(event.detail.xhr.status==200) {
+                                                                    document.getElementById('register-email').value = '';document.getElementById('register-username').value = '';
+                                                                    document.getElementById('register-phone').value = '';document.getElementById('register-password').value = '';
+                                                                }"
                                         hx-target-400="#error_register"
+                                        hx-indicator=".htmx-loader"
                                     >
                                         <div class="form-group">
                                             <label for="register-email">Your email address *</label>
@@ -71,7 +76,7 @@ templ HtmlSignup() {
 
                                         <div class="form-group">
                                             <label for="register-phone">Phone *</label>
-                                            <input type="text" class="form-control" id="register-phone" name="phone" required>
+                                            <input type="tel" class="form-control" id="register-phone" name="phone" required>
                                         </div><!-- End .form-group -->
 
                                         <div class="form-group">
