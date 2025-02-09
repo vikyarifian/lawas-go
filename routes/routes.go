@@ -44,16 +44,42 @@ func WebRoutes(app *fiber.App) {
 		return utils.Render(c, pages.Dashboard(auth.IsAuthenticated(c)))
 	})
 
+	app.Get("/add-remove-watchlist", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		var watchlist models.Watchlist
+		var token dto.Token
+		var count int64
+		token, _ = auth.IsAuthenticated(c)
+		fmt.Println(c.Query("item_id"))
+		db.MySql.Where("user_id=? AND item_id=?", token.UserID, c.Query("item_id")).First(&watchlist).Count(&count)
+		fmt.Println(count)
+		if count > 0 {
+			db.MySql.Where("user_id=? AND item_id=?", token.UserID, c.Query("item_id")).First(&watchlist)
+			err := db.MySql.Delete(&watchlist).Error
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+			return utils.Render(c, components.AddRemoveWatchlist(""))
+		} else {
+			watchlist.UserID = token.UserID
+			watchlist.ItemID = c.Query("item_id")
+			err := db.MySql.Save(&watchlist).Error
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+			return utils.Render(c, components.AddRemoveWatchlist(watchlist.ItemID))
+		}
+	})
+
 	app.Get("/my-sells", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
 		var sells []models.Item
 		var token dto.Token
 		var user models.User
 		token, _ = auth.IsAuthenticated(c)
 		db.MySql.First(&user, "username=?", token.Username)
-		db.MySql.Where("user_id=?", user.ID).Preload("User").Preload("Bids").Preload("Category").Find(&sells)
-		for _, sell := range sells {
-			fmt.Println(sell.User.Username)
-		}
+		db.MySql.Where("user_id=?", user.ID).Preload("User").Preload("Bids").Preload("Category").Preload("Currency").Find(&sells)
+		// for _, sell := range sells {
+		// 	fmt.Println(sell.User.Username)
+		// }
 		return utils.Render(c, pages.TabSell(sells))
 	})
 
@@ -64,11 +90,13 @@ func WebRoutes(app *fiber.App) {
 		token, _ = auth.IsAuthenticated(c)
 		db.MySql.First(&user, "username=?", token.Username)
 		db.MySql.Where("user_id=?", user.ID).Preload("Item", func(db *gorm.DB) *gorm.DB {
-			return db.Preload("Category").Preload("Bids").Preload("User")
+			return db.Preload("Category").Preload("Bids").Preload("User").Preload("Currency")
+		}).Preload("Watchlist", func(db *gorm.DB) *gorm.DB {
+			return db.Where("user_id=?", user.ID)
 		}).Find(&bids)
-		for _, sell := range bids {
-			fmt.Println(sell.User.Username)
-		}
+		// for _, sell := range bids {
+		// 	fmt.Println(sell.User.Username)
+		// }
 		return utils.Render(c, pages.TabBid(bids))
 	})
 
@@ -100,12 +128,12 @@ func WebRoutes(app *fiber.App) {
 					}
 					msg = msg + "Email"
 				}
-				if strings.Trim(user.Phone, " ") == strings.Trim(phone, " ") {
-					if msg != "" {
-						msg = msg + ", "
-					}
-					msg = msg + "Phone"
-				}
+				// if strings.Trim(user.Phone, " ") == strings.Trim(phone, " ") {
+				// 	if msg != "" {
+				// 		msg = msg + ", "
+				// 	}
+				// 	msg = msg + "Phone"
+				// }
 			}
 
 			return utils.Render(c, components.ErrorAlert(msg+" already exist!", "register"), templ.WithStatus(http.StatusBadRequest))
@@ -120,7 +148,7 @@ func WebRoutes(app *fiber.App) {
 		newUser.Password = string(hash)
 		newUser.Name = username
 		newUser.Email = email
-		newUser.Phone = phone
+		// newUser.Phone = phone
 		newUser.Level = "user"
 		newUser.CreatedAt = &t
 		newUser.CreatedBy = newUser.Username

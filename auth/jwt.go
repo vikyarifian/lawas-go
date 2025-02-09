@@ -20,6 +20,7 @@ var (
 func CreateToken(user models.User) (string, error) {
 
 	claims := jwt.MapClaims{
+		"user_id":  user.ID,
 		"username": user.Username,
 		"name":     cases.Title(language.English, cases.Compact).String(user.Name), //user.Employee.FullName,
 		"email":    user.Email,
@@ -48,12 +49,12 @@ func GetToken(c *fiber.Ctx) (dto.Token, error) {
 	var items []models.Item
 	var bids []models.Bid
 	var watchs []models.Watchlist
-	var user models.User
+	// var user models.User
 	var notif []dto.Notification
-	db.MySql.Find(&user, "username=? AND status='A'", fmt.Sprintf("%s", claims["username"]))
-	db.MySql.Find(&items, "user_id=? AND (date + interval duration day) > now()", user.ID)
-	db.MySql.Find(&bids, "user_id=? AND item_id in (SELECT id FROM items WHERE (date + interval duration day) > now())", user.ID)
-	db.MySql.Find(&watchs, "user_id=? AND item_id in (SELECT id FROM items WHERE (date + interval duration day) > now())", user.ID)
+	// db.MySql.Find(&user, "username=? AND status='A'", fmt.Sprintf("%s", claims["username"]))
+	db.MySql.Find(&items, "user_id=? AND (date + interval duration day) > now()", fmt.Sprintf("%s", claims["user_id"]))
+	db.MySql.Find(&bids, "user_id=? AND item_id in (SELECT id FROM items WHERE (date + interval duration day) > now())", fmt.Sprintf("%s", claims["user_id"]))
+	db.MySql.Find(&watchs, "user_id=? AND item_id in (SELECT id FROM items WHERE (date + interval duration day) > now())", fmt.Sprintf("%s", claims["user_id"]))
 	notif = append(notif, dto.Notification{
 		Code:  "SELL",
 		Name:  "Sells",
@@ -71,6 +72,7 @@ func GetToken(c *fiber.Ctx) (dto.Token, error) {
 	})
 
 	return dto.Token{
+		UserID:        fmt.Sprintf("%s", claims["user_id"]),
 		Username:      fmt.Sprintf("%s", claims["username"]),
 		Name:          cases.Title(language.English, cases.Compact).String(fmt.Sprintf("%s", claims["name"])),
 		Email:         fmt.Sprintf("%s", claims["email"]),

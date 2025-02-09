@@ -1,0 +1,13 @@
+package components
+
+templ AddRemoveWatchlist(id string) {
+    if id != "" {
+        <a href="#" class="btn-product-icon btn-wishlist" title="Remove from wishlist" 
+            style="border-color:#df4625;background-color:#df4625;color:#ffffff">
+        </a>
+    } else {
+        <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist" 
+            style="border-color:#ffffff;background-color:#ffffff;color:#df4625">
+        </a>
+    }
+}

@@ -3,14 +3,15 @@ package models
 import "time"
 
 type User struct {
-	No        int        `gorm:"column:no;primaryKey" json:"-,omitempty" form:"-"`
-	ID        string     `gorm:"column:id;unique" json:"id,omitempty" form:"id"`
-	Username  string     `gorm:"column:username;unique" json:"username,omitempty" form:"username"`
-	Email     string     `gorm:"column:email;unique" json:"email,omitempty" form:"email"`
-	Password  string     `gorm:"column:password" json:"password,omitempty" form:"password"`
-	Name      string     `gorm:"column:name" json:"name,omitempty" form:"name"`
-	Phone     string     `gorm:"column:phone;unique" json:"phone,omitempty" form:"phone"`
+	No       int    `gorm:"column:no;primaryKey" json:"-,omitempty" form:"-"`
+	ID       string `gorm:"column:id;unique" json:"id,omitempty" form:"id"`
+	Username string `gorm:"column:username;unique" json:"username,omitempty" form:"username"`
+	Email    string `gorm:"column:email;unique" json:"email,omitempty" form:"email"`
+	Password string `gorm:"column:password" json:"password,omitempty" form:"password"`
+	Name     string `gorm:"column:name" json:"name,omitempty" form:"name"`
+	// Phone     string     `gorm:"column:phone;unique" json:"phone,omitempty" form:"phone"`
 	Level     string     `gorm:"column:level" json:"level,omitempty" form:"level"`
+	Address   Address    `gorm:"foreignKey:ID;references:UserID" json:"address,omitempty"`
 	CreatedAt *time.Time `gorm:"column:created_at;type:TIMESTAMP NULL;default:null" json:"created_at,omitempty" form:"created_at"`
 	CreatedBy string     `gorm:"column:created_by" json:"created_by,omitempty" form:"created_by"`
 	UpdatedAt *time.Time `gorm:"column:updated_at;type:TIMESTAMP NULL;default:null" json:"updated_at,omitempty" form:"updated_at"`
@@ -37,6 +38,7 @@ type User struct {
 // 	`name` VARCHAR(75) NOT NULL,
 // 	`phone` VARCHAR(45) NOT NULL,
 // 	`level` VARCHAR(15) NOT NULL DEFAULT 'user',
+//  `address_id` VARCHAR(128) NULL DEFAULT ' ',
 //  `status` VARCHAR(1) NOT NULL DEFAULT 'A',
 // 	`created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP(),
 // 	`created_by` VARCHAR(25) NULL DEFAULT NULL,
