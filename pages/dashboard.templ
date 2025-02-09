@@ -5,6 +5,7 @@ import (
     "lawas-go/models"
     "lawas-go/components"
     "strconv"
+    "fmt"
 )
 
 templ Dashboard(token dto.Token, isLoggedIn bool) {
@@ -172,47 +173,63 @@ templ TabSell(sells []models.Item) {
         // <div class="container">
             for _, sell := range sells {
                 <article class="entry entry-list">
-                        <div class="row align-items-center">
-                            <div class="col-md-2">
-                                <figure class="entry-media">
-                                    <a href="#">
-                                        <img src={sell.Photo} alt={sell.Name} style="max-width: fit-content; ">
-                                    </a>
-                                </figure><!-- End .entry-media -->
-                            </div><!-- End .col-md-4 -->
-                            <div class="col-md-7">
-                                <div class="entry-body">
-                                    <h2 class="entry-title">
-                                        <a href="/">{sell.Name}</a>
-                                    </h2><!-- End .entry-title -->
+                    <div class="row align-items-center">
+                        <div class="col-md-2 product product-2">
+                            <figure class="product-media">
+                                <a href="#">
+                                    <img src={sell.Photo} alt={sell.Name} class="product-image">
+                                </a>
 
-                                    <div class="entry-meta">
-                                        <span class="entry-author">
-                                            by <a href="#">{sell.User.Username}</a>
-                                        </span>
-                                        <span class="meta-separator">|</span>
-                                        <a href="#">{sell.Date.Format("January, 02 2006")}</a>
-                                        <span class="meta-separator">|</span>
-                                        <a href="#">{strconv.Itoa(len(sell.Bids))} Bids</a>
-                                    </div><!-- End .entry-meta -->
+                                <div class="product-action-vertical" style="top:0.4rem;right:0.2rem;">
+                                    // <a href="#" class="btn-product-icon btn-wishlist" title="Remove from wishlist" 
+                                    //     style="border-color:#df4625;background-color:#df4625;color:#ffffff">
+                                    // </a>
+                                    // <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist" 
+                                    //     style="border-color:#ffffff;background-color:#ffffff;color:#df4625">
+                                    // </a>
+                                </div>
 
-                                    <div class="entry-cats">
-                                        in <a href="#">{sell.Category.Name}</a>
-                                    </div><!-- End .entry-cats -->
+                                // <div class="product-action product-action-dark">
+                                //     <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
+                                //     <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
+                                // </div><!-- End .product-action -->
+                            </figure><!-- End .product-media -->
+                        </div><!-- End .col-md-4 -->
+                        <div class="col-md-7">
+                            <div class="entry-body">
+                                <h2 class="entry-title">
+                                    <a href="/">{sell.Name}</a>
+                                </h2><!-- End .entry-title -->
 
-                                    <div class="entry-content">
-                                        <p>
-                                            if len(sell.Description) > 100 {
-                                                {sell.Description[0:100]} ...
-                                            } else {
-                                                {sell.Description}
-                                            }
-                                        </p>
-                                        // <a href="/" class="read-more">Continue</a>
-                                    </div><!-- End .entry-content -->
-                                </div><!-- End .entry-body -->
-                            </div><!-- End .col-md-8 -->
-                        </div>
+                                <div class="entry-meta">
+                                    <span class="entry-author">
+                                        by <a href="#">{sell.User.Username}</a>
+                                    </span>
+                                    <span class="meta-separator">|</span>
+                                    <a href="#">{sell.Date.Format("January, 02 2006")}</a>
+                                    <span class="meta-separator">|</span>
+                                    <a href="#">{strconv.Itoa(len(sell.Bids))} Bids</a>
+                                </div><!-- End .entry-meta -->
+
+                                <div class="entry-cats">
+                                    in <a href="#">{sell.Category.Name}</a>
+                                    <span class="meta-separator">|</span>
+                                    <a href="#">{sell.Currency.Code}{fmt.Sprintf("%.2f", sell.OpenBid)} </a>
+                                </div><!-- End .entry-cats -->
+
+                                <div class="entry-content">
+                                    <p>
+                                        if len(sell.Description) > 100 {
+                                            {sell.Description[0:100]} ...
+                                        } else {
+                                            {sell.Description}
+                                        }
+                                    </p>
+                                    // <a href="/" class="read-more">Continue</a>
+                                </div><!-- End .entry-content -->
+                            </div><!-- End .entry-body -->
+                        </div><!-- End .col-md-8 -->
+                    </div>
                 </article>
             }
         // </div>
@@ -228,47 +245,76 @@ templ TabBid(bids []models.Bid) {
         // <div class="container">
             for _, bid := range bids {
                 <article class="entry entry-list">
-                        <div class="row align-items-center">
-                            <div class="col-md-2">
-                                <figure class="entry-media">
-                                    <a href="#">
-                                        <img src={bid.Item.Photo} alt={bid.Item.Name} style="max-width: fit-content; ">
-                                    </a>
-                                </figure><!-- End .entry-media -->
-                            </div><!-- End .col-md-4 -->
-                            <div class="col-md-7">
-                                <div class="entry-body">
-                                    <h2 class="entry-title">
-                                        <a href="/">{bid.Item.Name}</a>
-                                    </h2><!-- End .entry-title -->
+                    <div class="row align-items-center">
+                        <div class="col-md-2 product product-2">
+                            <figure class="product-media">
+                                <a href="#">
+                                    <img src={bid.Item.Photo} alt={bid.Item.Name} class="product-image">
+                                </a>
+                                
+                                <div id={bid.Item.ID} class="product-action-vertical" style="top:0.4rem;right:0.2rem;"
+                                    hx-get={fmt.Sprintf("/add-remove-watchlist/?item_id=%s",bid.Item.ID)}             
+                                    hx-swap="innerHtml"
+                                    hx-trigger="click"
+                                    hx-indicator=".htmx-loader">
+                                    @components.AddRemoveWatchlist(bid.Watchlist.ID)
+                                    // if bid.Watchlist.ID != "" {
+                                    //     <a href="#" class="btn-product-icon btn-wishlist" title="Remove from wishlist" 
+                                    //         style="border-color:#df4625;background-color:#df4625;color:#ffffff">
+                                    //     </a>
+                                    // } else {
+                                    //     <a href="#" class="btn-product-icon btn-wishlist" title="Add to wishlist" 
+                                    //         style="border-color:#ffffff;background-color:#ffffff;color:#df4625">
+                                    //     </a>
+                                    // }
+                                </div>
 
-                                    <div class="entry-meta">
-                                        <span class="entry-author">
-                                            by <a href="#">{bid.Item.User.Username}</a>
-                                        </span>
-                                        <span class="meta-separator">|</span>
-                                        <a href="#">{bid.Item.Date.Format("January, 02 2006")}</a>
-                                        <span class="meta-separator">|</span>
-                                        <a href="#">{strconv.Itoa(len(bid.Item.Bids))} Bids</a>
-                                    </div><!-- End .entry-meta -->
+                                // <div class="product-action product-action-dark">
+                                //     <a href="#" class="btn-product btn-cart" title="Add to cart"><span>add to cart</span></a>
+                                //     <a href="popup/quickView.html" class="btn-product btn-quickview" title="Quick view"><span>quick view</span></a>
+                                // </div><!-- End .product-action -->
+                            </figure><!-- End .product-media -->
+                            // <figure class="entry-media">
+                            //     <a href="#">
+                            //         <img src={bid.Item.Photo} alt={bid.Item.Name} style="max-width: fit-content; ">
+                            //     </a>
+                            // </figure><!-- End .entry-media -->
+                        </div><!-- End .col-md-4 -->
+                        <div class="col-md-7">
+                            <div class="entry-body">
+                                <h2 class="entry-title">
+                                    <a href="/">{bid.Item.Name}</a>
+                                </h2><!-- End .entry-title -->
 
-                                    <div class="entry-cats">
-                                        in <a href="#">{bid.Item.Category.Name}</a>
-                                    </div><!-- End .entry-cats -->
+                                <div class="entry-meta">
+                                    <span class="entry-author">
+                                        by <a href="#">{bid.Item.User.Username}</a>
+                                    </span>
+                                    <span class="meta-separator">|</span>
+                                    <a href="#">{bid.Item.Date.Format("January, 02 2006")}</a>
+                                    <span class="meta-separator">|</span>
+                                    <a href="#">{strconv.Itoa(len(bid.Item.Bids))} Bids</a>
+                                </div><!-- End .entry-meta -->
 
-                                    <div class="entry-content">
-                                        <p>
-                                            if len(bid.Item.Description) > 100 {
-                                                {bid.Item.Description[0:100]} ... 
-                                            } else {
-                                                {bid.Item.Description}
-                                            } 
-                                        </p>
-                                        // <a href="/" class="read-more">Continue</a>
-                                    </div><!-- End .entry-content -->
-                                </div><!-- End .entry-body -->
-                            </div><!-- End .col-md-8 -->
-                        </div>
+                                <div class="entry-cats">
+                                    in <a href="#">{bid.Item.Category.Name}</a>
+                                    <span class="meta-separator">|</span>
+                                    <a href="#">{bid.Item.Currency.Code} {fmt.Sprintf("%.2f", bid.Bid)} </a>
+                                </div><!-- End .entry-cats -->
+
+                                <div class="entry-content">
+                                    <p>
+                                        if len(bid.Item.Description) > 100 {
+                                            {bid.Item.Description[0:100]} ... 
+                                        } else {
+                                            {bid.Item.Description}
+                                        } 
+                                    </p>
+                                    // <a href="/" class="read-more">Continue</a>
+                                </div><!-- End .entry-content -->
+                            </div><!-- End .entry-body -->
+                        </div><!-- End .col-md-8 -->
+                    </div>
                 </article>
             }
         // </div>

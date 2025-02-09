@@ -13,7 +13,7 @@ type Currency struct {
 	UpdatedBy string     `gorm:"column:updated_by" json:"updated_by,omitempty" form:"updated_by"`
 }
 
-// CREATE TABLE `db_lawas`.`currency` (
+// CREATE TABLE `db_lawas`.`currencies` (
 // 	`no` INT NOT NULL AUTO_INCREMENT,
 // 	`id` VARCHAR(128) NOT NULL DEFAULT '0',
 // 	`name` VARCHAR(45) NOT NULL,

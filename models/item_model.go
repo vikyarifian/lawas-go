@@ -39,7 +39,7 @@ type Item struct {
 //  `user_id` VARCHAR(128) NOT NULL AFTER `id`,
 // 	`name` VARCHAR(100) NOT NULL,
 // 	`description` TEXT NOT NULL DEFAULT ' ',
-// 	`photo` VARCHAR(100) NOT NULL DEFAULT '/assets/images/products/no-image.jpg',
+// 	`photo` VARCHAR(300) NOT NULL DEFAULT '/assets/images/products/no-image.jpg',
 // 	`category_id` VARCHAR(128) NOT NULL DEFAULT ' ',
 // 	`size` VARCHAR(25) NULL DEFAULT ' ',
 // 	`color` VARCHAR(25) NULL DEFAULT ' ',
