@@ -41,6 +41,28 @@ func WebRoutes(app *fiber.App) {
 		return utils.Render(c, pages.Forbidden(auth.IsAuthenticated(c)))
 	})
 
+	app.Get("/contact", func(c *fiber.Ctx) error {
+		return utils.Render(c, pages.Contact(auth.IsAuthenticated(c)))
+	})
+
+	app.Get("/about", func(c *fiber.Ctx) error {
+		return utils.Render(c, pages.About(auth.IsAuthenticated(c)))
+	})
+
+	app.Get("/faq", func(c *fiber.Ctx) error {
+		return utils.Render(c, pages.Faq(auth.IsAuthenticated(c)))
+	})
+
+	app.Get("/item", func(c *fiber.Ctx) error {
+		var item models.Item
+		var token dto.Token
+		token, _ = auth.GetToken(c)
+
+		db.MySql.Where("id=?", c.Query("id")).First(&item)
+
+		return utils.Render(c, pages.Item(item, token, token.IsAuth))
+	})
+
 	app.Get("/dashboard", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
 		return utils.Render(c, pages.Dashboard(auth.IsAuthenticated(c)))
 	})
@@ -50,7 +72,6 @@ func WebRoutes(app *fiber.App) {
 		var token dto.Token
 		var count int64
 		token, _ = auth.IsAuthenticated(c)
-		fmt.Println(c.Query("item_id"))
 		db.MySql.Where("user_id=? AND item_id=?", token.UserID, c.Query("item_id")).First(&watchlist).Count(&count)
 		fmt.Println(count)
 		if count > 0 {
@@ -69,6 +90,108 @@ func WebRoutes(app *fiber.App) {
 			}
 			return utils.Render(c, components.AddRemoveWatchlist(watchlist.ItemID))
 		}
+	})
+
+	app.Get("/my-address", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		var address models.Address
+		var token dto.Token
+		tipe := c.Query("tipe")
+		token, _ = auth.IsAuthenticated(c)
+		db.MySql.Where("user_id=?", token.UserID).First(&address)
+		return utils.Render(c, pages.TabAddress(tipe, address))
+	})
+
+	app.Post("/save-address", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		var address models.Address
+		var token dto.Token
+		var p models.Address
+		tipe := c.Query("tipe")
+		token, _ = auth.IsAuthenticated(c)
+		db.MySql.Where("user_id=?", token.UserID).First(&address)
+		// return utils.Render(c, components.ErrorAlert("errr", tipe), templ.WithStatus(http.StatusBadRequest))
+		if err := c.BodyParser(&p); err != nil {
+			log.Println(err.Error())
+			return utils.Render(c, components.ErrorAlert(err.Error(), tipe), templ.WithStatus(http.StatusBadRequest))
+		}
+
+		if tipe == "billing" {
+			address.BillName = p.BillName
+			address.BillPhone = p.BillPhone
+			address.BillAddress = p.BillAddress
+			address.BillCity = p.BillCity
+			address.BillPostalCode = p.BillPostalCode
+			address.BillCountry = p.BillCountry
+		} else {
+			address.ShipAddress = p.ShipName
+			address.ShipPhone = p.ShipPhone
+			address.ShipAddress = p.ShipAddress
+			address.ShipCity = p.ShipCity
+			address.ShipPostalCode = p.ShipPostalCode
+			address.ShipCountry = p.ShipCountry
+		}
+		err := db.MySql.Save(&address).Error
+		if err != nil {
+			log.Println(err.Error())
+			return utils.Render(c, components.ErrorAlert(err.Error(), tipe), templ.WithStatus(http.StatusBadRequest))
+		}
+		return utils.Render(c, components.SuccessAlert("Update success!", tipe), templ.WithStatus(http.StatusOK))
+	})
+
+	app.Get("/my-account", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		var user models.User
+		var token dto.Token
+		token, _ = auth.IsAuthenticated(c)
+		err := db.MySql.Where("id=?", token.UserID).First(&user).Error
+		if err != nil {
+			log.Println(err.Error())
+			return utils.Render(c, components.ErrorAlert(err.Error(), "account"), templ.WithStatus(http.StatusBadRequest))
+		}
+		return utils.Render(c, pages.TabAccount(user))
+	})
+
+	app.Post("/save-account", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		var user models.User
+		type Alias models.User
+		var token dto.Token
+		token, _ = auth.IsAuthenticated(c)
+		var userForm = struct {
+			Alias
+			CurrenPassword  string `form:"current_password"`
+			NewPassword     string `form:"new_password"`
+			ConfirmPassword string `form:"confirm_password"`
+		}{}
+		err := db.MySql.Where("id=?", token.UserID).First(&user).Error
+		if err != nil {
+			log.Println(err.Error())
+			return utils.Render(c, components.ErrorAlert(err.Error(), "account"), templ.WithStatus(http.StatusBadRequest))
+		}
+		if err := c.BodyParser(&userForm); err != nil {
+			log.Println(err.Error())
+			return utils.Render(c, components.ErrorAlert(err.Error(), "account"), templ.WithStatus(http.StatusBadRequest))
+		}
+
+		if bcrypt.CompareHashAndPassword([]byte(strings.Trim(user.Password, " ")), []byte(userForm.CurrenPassword)) != nil {
+			return utils.Render(c, components.ErrorAlert("Invalid password", "account"), templ.WithStatus(http.StatusBadRequest))
+		}
+
+		if userForm.NewPassword != userForm.ConfirmPassword {
+			return utils.Render(c, components.ErrorAlert("New password not matched", "account"), templ.WithStatus(http.StatusBadRequest))
+		}
+
+		if strings.Trim(userForm.NewPassword, " ") != "" {
+			hash, _ := auth.HashPassword(userForm.NewPassword)
+			user.Password = string(hash)
+		}
+
+		user.Name = userForm.Name
+		user.Email = userForm.Email
+
+		err = db.MySql.Save(&user).Error
+		if err != nil {
+			log.Println(err.Error())
+			return utils.Render(c, components.ErrorAlert(err.Error(), "account"), templ.WithStatus(http.StatusBadRequest))
+		}
+		return utils.Render(c, components.SuccessAlert("Update success!", "account"), templ.WithStatus(http.StatusOK))
 	})
 
 	app.Get("/my-sells", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {

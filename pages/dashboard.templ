@@ -111,13 +111,16 @@ templ Dashboard(token dto.Token, isLoggedIn bool) {
                                                 <div class="card-body">
                                                     <h3 class="card-title">Billing Address</h3><!-- End .card-title -->
 
-                                                    <p>User Name<br>
-                                                    User Company<br>
-                                                    John str<br>
-                                                    New York, NY 10001<br>
-                                                    1-234-987-6543<br>
-                                                    yourmail@mail.com<br>
-                                                    <a href="#">Edit <i class="icon-edit"></i></a></p>
+                                                    <div id="bill-address"
+                                                        hx-get="/my-address?tipe=billing"               
+                                                        hx-swap="innerHtml"
+                                                        hx-target="#bill-address"
+                                                        hx-indicator=".htmx-loader"
+                                                        hx-trigger="load"
+                                                    >
+                                                        <br>
+                                                    </div>
+                                                    <a href="#billing-address-modal" data-toggle="modal" onclick="document.getElementById('success_billing').innerHTML = '';">Edit <i class="icon-edit"></i></a>
                                                 </div><!-- End .card-body -->
                                             </div><!-- End .card-dashboard -->
                                         </div><!-- End .col-lg-6 -->
@@ -126,50 +129,30 @@ templ Dashboard(token dto.Token, isLoggedIn bool) {
                                             <div class="card card-dashboard">
                                                 <div class="card-body">
                                                     <h3 class="card-title">Shipping Address</h3><!-- End .card-title -->
-
-                                                    <p>You have not set up this type of address yet.<br>
-                                                    <a href="#">Edit <i class="icon-edit"></i></a></p>
+                                                    <div id="bill-shipping"
+                                                        hx-get="/my-address?tipe=shipping"               
+                                                        hx-swap="innerHtml"
+                                                        hx-target="#bill-shipping"
+                                                        hx-indicator=".htmx-loader"
+                                                        hx-trigger="load"
+                                                    >
+                                                        <br>
+                                                    </div>
+                                                    <a href="#shipping-address-modal" data-toggle="modal" onclick="document.getElementById('success_shipping').innerHTML = '';">Edit <i class="icon-edit"></i></a>
                                                 </div><!-- End .card-body -->
                                             </div><!-- End .card-dashboard -->
                                         </div><!-- End .col-lg-6 -->
                                     </div><!-- End .row -->
                                 </div><!-- .End .tab-pane -->
 
-                                <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
-                                    <form action="#">
-                                        <div class="row">
-                                            <div class="col-sm-6">
-                                                <label>First Name *</label>
-                                                <input type="text" class="form-control" required>
-                                            </div><!-- End .col-sm-6 -->
-
-                                            <div class="col-sm-6">
-                                                <label>Last Name *</label>
-                                                <input type="text" class="form-control" required>
-                                            </div><!-- End .col-sm-6 -->
-                                        </div><!-- End .row -->
-
-                                        <label>Display Name *</label>
-                                        <input type="text" class="form-control" required>
-                                        <small class="form-text">This will be how your name will be displayed in the account section and in reviews</small>
-
-                                        <label>Email address *</label>
-                                        <input type="email" class="form-control" required>
-
-                                        <label>Current password (leave blank to leave unchanged)</label>
-                                        <input type="password" class="form-control">
-
-                                        <label>New password (leave blank to leave unchanged)</label>
-                                        <input type="password" class="form-control">
-
-                                        <label>Confirm new password</label>
-                                        <input type="password" class="form-control mb-2">
-
-                                        <button type="submit" class="btn btn-outline-primary-2">
-                                            <span>SAVE CHANGES</span>
-                                            <i class="icon-long-arrow-right"></i>
-                                        </button>
-                                    </form>
+                                <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link"
+                                    hx-get="/my-account"               
+                                    hx-swap="innerHtml"
+                                    hx-target="#tab-account"
+                                    hx-indicator=".htmx-loader"
+                                    hx-trigger="load"
+                                >
+                                    
                                 </div><!-- .End .tab-pane -->
                             </div>
                         </div>
@@ -178,6 +161,204 @@ templ Dashboard(token dto.Token, isLoggedIn bool) {
             </div>
         </div>
     }
+}
+
+templ TabAccount(user models.User) {
+    <form id="account-form"
+        hx-disabled-elt="#account-button"
+        hx-post="/save-account"
+        hx-swap="none"
+        hx-on::before-request="document.getElementById('error_account').innerHTML = '';document.getElementById('success_account').innerHTML = ''"
+        hx-on::after-request="if(event.detail.xhr.status==200) {
+                                    document.getElementById('current_password').value = '';
+                                    document.getElementById('new_password').value = '';
+                                    document.getElementById('confirm_password').value = '';
+                                    document.getElementById('error_account').innerHTML = '';
+                                } else {
+                                    document.getElementById('success_account').innerHTML = ''
+                                }"
+        hx-target-400="#error_account"
+        hx-indicator=".htmx-loader"
+    >
+        <div class="row">
+            <div class="col-sm-6">
+                <label>Username *</label>
+                <input type="text" class="form-control" id="username" name="username" disabled value={user.Username}>
+            </div><!-- End .col-sm-6 -->
+
+            <div class="col-sm-6">
+            </div><!-- End .col-sm-6 -->
+        </div><!-- End .row -->
+
+        <label>Name *</label>
+        <input type="text" class="form-control" id="name" name="name" required value={user.Name}>
+
+        <label>Email address *</label>
+        <input type="email" class="form-control" id="email" name="email" required value={user.Email}>
+
+        <label>Current password *</label>
+        <input type="password" class="form-control" id="current_password" name="current_password" required>
+
+        <label>New password (leave blank to leave unchanged)</label>
+        <input type="password" class="form-control" id="new_password" name="new_password">
+
+        <label>Confirm new password</label>
+        <input type="password" class="form-control mb-2" id="confirm_password" name="confirm_password">
+        <span id="error_account"></span>
+        <span id="success_account"></span> 
+        <button id="account-button" type="submit" class="btn btn-outline-primary-2">
+            <span>SAVE CHANGES</span>
+            <i class="icon-long-arrow-right"></i>
+        </button>
+    </form>
+}
+
+templ TabAddress(tipe string, address models.Address) {
+    if tipe == "billing" {
+        <p id="billing_address">
+            if address.ID != "" {
+                <span id="b_name">{address.BillName}</span><br>
+                <span id="b_phone">{address.BillPhone}</span><br>
+                <span id="b_address">{address.BillAddress}</span><br>
+                <span id="b_city">{address.BillCity}</span><br>
+                <span id="b_postal_code">{address.BillPostalCode}</span><br>
+                <span id="b_country">{address.BillCountry}</span><br>
+            } else {
+                You have not set up this type of address yet.<br>
+            }
+        </p>
+    } else {
+        <p id="shipping_address">
+            if address.ID != "" {
+                <span id="s_name">{address.ShipName}</span><br>
+                <span id="s_phone">{address.ShipPhone}</span><br>
+                <span id="s_address">{address.ShipAddress}</span><br>
+                <span id="s_city">{address.ShipCity}</span><br>
+                <span id="s_postal_code">{address.ShipPostalCode}</span><br>
+                <span id="s_country">{address.ShipCountry}</span><br>
+            } else {
+                You have not set up this type of address yet.<br>
+            }
+        </p>
+    }
+    @EditAddress(tipe, address)
+}
+
+templ EditAddress(tipe string, address models.Address) {
+    <div class="modal fade" id={fmt.Sprintf("%s-address-modal", tipe)} tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="icon-close"></i></span>
+                    </button>
+
+                    <div class="form-box">
+                        <div class="form-tab">
+                            <ul class="nav nav-pills nav-fill nav-border-anim" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="address-tab" data-toggle="tab" 
+                                        href="#address"  role="tab" aria-controls={tipe} aria-selected="true"
+                                    >Address {tipe}</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="tab-content-5">
+                                <div class="tab-pane fade show active" id={fmt.Sprintf("%s-tab", tipe)} role="tabpanel" aria-labelledby={fmt.Sprintf("%s-tab", tipe)} >
+                                    <form id={fmt.Sprintf("%s-form", tipe)} 
+                                        hx-disabled-elt={fmt.Sprintf("#%s-button", tipe)} 
+                                        hx-post={fmt.Sprintf("/save-address?tipe=%s" , tipe)}               
+                                        hx-swap="none"
+                                        hx-on::before-request="document.getElementById('error_billing').innerHTML = '';document.getElementById('error_shipping').innerHTML = '';
+                                                                document.getElementById('success_billing').innerHTML = '';document.getElementById('success_shipping').innerHTML = '';"
+                                        hx-on::after-request="if(event.detail.xhr.status==200) {
+                                                                    document.getElementById('b_name').innerHTML = document.getElementById('bill_name').value;
+                                                                    document.getElementById('b_address').innerHTML = document.getElementById('bill_address').value;
+                                                                    document.getElementById('b_phone').innerHTML = document.getElementById('bill_phone').value;
+                                                                    document.getElementById('b_city').innerHTML = document.getElementById('bill_city').value;
+                                                                    document.getElementById('b_postal_code').innerHTML = document.getElementById('bill_postal_code').value;
+                                                                    document.getElementById('b_country').innerHTML = document.getElementById('bill_country').value;
+                                                                    document.getElementById('s_name').innerHTML = document.getElementById('ship_name').value;
+                                                                    document.getElementById('s_address').innerHTML = document.getElementById('ship_address').value;
+                                                                    document.getElementById('s_phone').innerHTML = document.getElementById('ship_phone').value;
+                                                                    document.getElementById('s_city').innerHTML = document.getElementById('ship_city').value;
+                                                                    document.getElementById('s_postal_code').innerHTML = document.getElementById('ship_postal_code').value;
+                                                                    document.getElementById('s_country').innerHTML = document.getElementById('ship_country').value;
+                                                                }"
+                                        hx-target-400={fmt.Sprintf("#error_%s", tipe)}
+                                        hx-indicator=".htmx-loader"
+                                    >
+                                        <div class="form-group">
+                                            <label for="name">Name</label>
+                                            <input type="text" class="form-control" id={fmt.Sprintf("%s_name", tipe[0:4])} name={fmt.Sprintf("%s_name", tipe[0:4])} required
+                                                if tipe=="billing" {
+                                                    value={address.BillName}
+                                                } else {
+                                                    value={address.ShipName}
+                                                }
+                                            >
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="phone">Phone</label>
+                                            <input type="text" class="form-control" id={fmt.Sprintf("%s_phone", tipe[0:4])} name={fmt.Sprintf("%s_phone", tipe[0:4])} required
+                                                if tipe=="billing" {
+                                                    value={address.BillPhone}
+                                                } else {
+                                                    value={address.ShipPhone}
+                                                }
+                                            >
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="address">Address</label>
+                                            <input type="text" class="form-control" id={fmt.Sprintf("%s_address", tipe[0:4])} name={fmt.Sprintf("%s_address", tipe[0:4])} required
+                                                if tipe=="billing" {
+                                                    value={address.BillAddress}
+                                                } else {
+                                                    value={address.ShipAddress}
+                                                }
+                                            > 
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="city">City</label>
+                                            <input type="text" class="form-control" id={fmt.Sprintf("%s_city", tipe[0:4])} name={fmt.Sprintf("%s_city", tipe[0:4])} required
+                                                if tipe=="billing" {
+                                                    value={address.BillCity}
+                                                } else {
+                                                    value={address.ShipCity}
+                                                }
+                                            >
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="postal_code">Postal Code</label>
+                                            <input type="text" class="form-control" id={fmt.Sprintf("%s_postal_code", tipe[0:4])} name={fmt.Sprintf("%s_postal_code", tipe[0:4])} required
+                                                if tipe=="billing" {
+                                                    value={address.BillPostalCode}
+                                                } else {
+                                                    value={address.ShipPostalCode}
+                                                }
+                                            >
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="country">Country</label>
+                                            <input type="text" class="form-control" id={fmt.Sprintf("%s_country", tipe[0:4])} name={fmt.Sprintf("%s_country", tipe[0:4])} required
+                                                if tipe=="billing" {
+                                                    value={address.BillCountry}
+                                                } else {
+                                                    value={address.ShipCountry}
+                                                }
+                                            >
+                                        </div>
+                                        <span id={fmt.Sprintf("error_%s", tipe)}></span>
+                                        <span id={fmt.Sprintf("success_%s", tipe)}></span>
+                                        <button type="submit" class="btn btn-primary mt-1" id={fmt.Sprintf("%s-button", tipe)}>Save</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>  
+                </div>
+            </div>
+        </div>
+    </div>
 }
 
 templ TabSell(page int, size int, count int64, sells []models.Item) {
@@ -223,7 +404,7 @@ templ TabSell(page int, size int, count int64, sells []models.Item) {
                         <div class="col-md-7">
                             <div class="entry-body">
                                 <h2 class="entry-title">
-                                    <a href="/">{sell.Name}</a>
+                                    <a href={templ.SafeURL(fmt.Sprintf("/item?id=%s", sell.ID))}>{sell.Name}</a>
                                 </h2><!-- End .entry-title -->
 
                                 <div class="entry-meta">
@@ -270,9 +451,9 @@ templ TabSell(page int, size int, count int64, sells []models.Item) {
                             if page == 1 {
                                 class="page-item disabled"
                             } 
-                            hx-get={fmt.Sprintf("/my-bids?page=%v&size=%v",(page-1),size)}
+                            hx-get={fmt.Sprintf("/my-sells?page=%v&size=%v",(page-1),size)}
                             hx-swap="innerHtml"
-                            hx-target="#tab-bids"
+                            hx-target="#tab-sells"
                             hx-indicator=".htmx-loader"
                         >
                             <span aria-hidden="true"><i class="icon-long-arrow-left"></i></span>Prev
@@ -283,9 +464,9 @@ templ TabSell(page int, size int, count int64, sells []models.Item) {
                             <li class="page-item active" aria-current="page"><a class="page-link" href="#">{strconv.Itoa(i)}</a></li>
                         } else {
                             <li class="page-item"><a class="page-link" href="#"
-                                hx-get={fmt.Sprintf("/my-bids?page=%v&size=%v",(i),size)}
+                                hx-get={fmt.Sprintf("/my-sells?page=%v&size=%v",(i),size)}
                                 hx-swap="innerHtml"
-                                hx-target="#tab-bids"
+                                hx-target="#tab-sells"
                                 hx-indicator=".htmx-loader"
                             >{strconv.Itoa(i)}</a></li>
                         }
@@ -302,9 +483,9 @@ templ TabSell(page int, size int, count int64, sells []models.Item) {
                         }
                     >
                         <a class="page-link page-link-next" href="#" aria-label="Next"
-                            hx-get={fmt.Sprintf("/my-bids?page=%v&size=%v",(page+1),size)}
+                            hx-get={fmt.Sprintf("/my-sells?page=%v&size=%v",(page+1),size)}
                             hx-swap="innerHtml"
-                            hx-target="#tab-bids"
+                            hx-target="#tab-sells"
                             hx-indicator=".htmx-loader"
                         >
                             Next <span aria-hidden="true"><i class="icon-long-arrow-right"
@@ -377,7 +558,7 @@ templ TabBid(page int, size int, count int64, bids []models.Bid) {
                         <div class="col-md-7">
                             <div class="entry-body">
                                 <h2 class="entry-title">
-                                    <a href="/">{bid.Item.Name}</a>
+                                    <a href={templ.SafeURL(fmt.Sprintf("/item?id=%s", bid.Item.ID))}>{bid.Item.Name}</a>
                                 </h2><!-- End .entry-title -->
 
                                 <div class="entry-meta">
@@ -531,7 +712,7 @@ templ TabWatch(page int, size int, count int64, watchs []models.Watchlist) {
                         <div class="col-md-7">
                             <div class="entry-body">
                                 <h2 class="entry-title">
-                                    <a href="/">{watch.Item.Name}</a>
+                                    <a href={templ.SafeURL(fmt.Sprintf("/item?id=%s", watch.Item.ID))}>{watch.Item.Name}</a>
                                 </h2><!-- End .entry-title -->
 
                                 <div class="entry-meta">
@@ -610,9 +791,9 @@ templ TabWatch(page int, size int, count int64, watchs []models.Watchlist) {
                         }
                     >
                         <a class="page-link page-link-next" href="#" aria-label="Next"
-                            hx-get={fmt.Sprintf("/my-bids?page=%v&size=%v",(page+1),size)}
+                            hx-get={fmt.Sprintf("/my-watchs?page=%v&size=%v",(page+1),size)}
                             hx-swap="innerHtml"
-                            hx-target="#tab-bids"
+                            hx-target="#tab-watchs"
                             hx-indicator=".htmx-loader"
                         >
                             Next <span aria-hidden="true"><i class="icon-long-arrow-right"
