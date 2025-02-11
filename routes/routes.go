@@ -74,7 +74,6 @@ func WebRoutes(app *fiber.App) {
 	app.Get("/my-sells", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
 		var sells []models.Item
 		var token dto.Token
-		var user models.User
 		var count int64 = 0
 
 		pageStr := c.Query("page")
@@ -97,8 +96,8 @@ func WebRoutes(app *fiber.App) {
 			size = 5
 		}
 		token, _ = auth.IsAuthenticated(c)
-		db.MySql.First(&user, "username=?", token.Username)
-		db.MySql.Where("user_id=?", user.ID).Preload("User").Preload("Bids").Preload("Category").Preload("Currency").Find(&sells).
+
+		db.MySql.Where("user_id=?", token.UserID).Preload("User").Preload("Bids").Preload("Category").Preload("Currency").Find(&sells).
 			Count(&count).Offset((page - 1) * size).Limit(size).Find(&sells)
 		// for _, sell := range sells {
 		// 	fmt.Println(sell.User.Username)
@@ -106,10 +105,44 @@ func WebRoutes(app *fiber.App) {
 		return utils.Render(c, pages.TabSell(page, size, count, sells))
 	})
 
+	app.Get("/my-watchs", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		var watchlist []models.Watchlist
+		var token dto.Token
+		var count int64 = 0
+
+		pageStr := c.Query("page")
+		if pageStr == "" {
+			pageStr = "1"
+		}
+
+		page, err := strconv.Atoi(pageStr)
+		if err != nil {
+			page = 1
+		}
+
+		pageSize := c.Query("size")
+		if pageSize == "" {
+			pageSize = "5"
+		}
+
+		size, err := strconv.Atoi(pageSize)
+		if err != nil {
+			size = 5
+		}
+		token, _ = auth.IsAuthenticated(c)
+
+		db.MySql.Where("user_id=?", token.UserID).Preload("Item", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Category").Preload("Bids").Preload("User").Preload("Currency")
+		}).Find(&watchlist).Count(&count).Offset((page - 1) * size).Limit(size).Find(&watchlist)
+		// for _, sell := range sells {
+		// 	fmt.Println(sell.User.Username)
+		// }
+		return utils.Render(c, pages.TabWatch(page, size, count, watchlist))
+	})
+
 	app.Get("/my-bids", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
 		var bids []models.Bid
 		var token dto.Token
-		var user models.User
 		var count int64 = 0
 
 		pageStr := c.Query("page")
@@ -133,11 +166,11 @@ func WebRoutes(app *fiber.App) {
 		}
 
 		token, _ = auth.IsAuthenticated(c)
-		db.MySql.First(&user, "username=?", token.Username)
-		db.MySql.Where("user_id=?", user.ID).Preload("Item", func(db *gorm.DB) *gorm.DB {
+
+		db.MySql.Where("user_id=?", token.UserID).Preload("Item", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("Category").Preload("Bids").Preload("User").Preload("Currency")
 		}).Preload("Watchlist", func(db *gorm.DB) *gorm.DB {
-			return db.Where("user_id=?", user.ID)
+			return db.Where("user_id=?", token.UserID)
 		}).Find(&bids).Count(&count).Offset((page - 1) * size).Limit(size).Find(&bids)
 		// for _, sell := range bids {
 		// 	fmt.Println(sell.User.Username)
