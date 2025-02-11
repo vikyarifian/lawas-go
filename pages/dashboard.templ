@@ -6,6 +6,7 @@ import (
     "lawas-go/components"
     "strconv"
     "fmt"
+    "math"
 )
 
 templ Dashboard(token dto.Token, isLoggedIn bool) {
@@ -47,7 +48,7 @@ templ Dashboard(token dto.Token, isLoggedIn bool) {
                                         hx-swap="innerHtml"
                                         hx-target="#tab-sells"
                                         hx-indicator=".htmx-loader"
-                                    >Sells</a>
+                                    >Offers</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="tab-bids-link" data-toggle="tab" href="#tab-bids" role="tab" aria-controls="tab-bids" aria-selected="false"
@@ -78,7 +79,7 @@ templ Dashboard(token dto.Token, isLoggedIn bool) {
                                 </div><!-- .End .tab-pane -->
 
                                 <div class="tab-pane fade" id="tab-sells" role="tabpanel" aria-labelledby="tab-sells-link">
-                                    <p>No sells available yet.</p>
+                                    <p>No sells has been made yet.</p>
                                     <a href="/sell" class="btn btn-outline-primary-2"><span>GO SELL</span><i class="icon-long-arrow-right"></i></a>
                                 </div><!-- .End .tab-pane -->
 
@@ -165,9 +166,9 @@ templ Dashboard(token dto.Token, isLoggedIn bool) {
     }
 }
 
-templ TabSell(sells []models.Item) {
+templ TabSell(page int, size int, count int64, sells []models.Item) {
     if len(sells) == 0 {
-        <p>No sells available yet.</p>
+        <p>No offer has been made yet.</p>
         <a href="/sell" class="btn btn-outline-primary-2"><span>GO SELL</span><i class="icon-long-arrow-right"></i></a>
     } else {
         // <div class="container">
@@ -232,12 +233,71 @@ templ TabSell(sells []models.Item) {
                     </div>
                 </article>
             }
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li 
+                        if page == 1 {
+                            class="page-item disabled"
+                        } else {
+                            class="page-item"
+                        }
+                    >
+                        <a class="page-link page-link-prev" href="#" aria-label="Previous" tabindex="-1" 
+                            if page == 1 {
+                                class="page-item disabled"
+                            } 
+                            hx-get={fmt.Sprintf("/my-bids?page=%v&size=%v",(page-1),size)}
+                            hx-swap="innerHtml"
+                            hx-target="#tab-bids"
+                            hx-indicator=".htmx-loader"
+                        >
+                            <span aria-hidden="true"><i class="icon-long-arrow-left"></i></span>Prev
+                        </a>
+                    </li>
+                    for i := 1; i<=int(math.Ceil(float64(float64(count) / float64(size)))); i++ {
+                        if page==i {
+                            <li class="page-item active" aria-current="page"><a class="page-link" href="#">{strconv.Itoa(i)}</a></li>
+                        } else {
+                            <li class="page-item"><a class="page-link" href="#"
+                                hx-get={fmt.Sprintf("/my-bids?page=%v&size=%v",(i),size)}
+                                hx-swap="innerHtml"
+                                hx-target="#tab-bids"
+                                hx-indicator=".htmx-loader"
+                            >{strconv.Itoa(i)}</a></li>
+                        }
+                    }
+                    // <li class="page-item active" aria-current="page"><a class="page-link" href="#">1</a></li>
+                    // <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    // <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    // <li class="page-item-total">of 6</li>
+                    <li 
+                        if page==int(math.Ceil(float64(float64(count) / float64(size)))) {
+                            class="page-item disabled"
+                        } else {
+                            class="page-item"
+                        }
+                    >
+                        <a class="page-link page-link-next" href="#" aria-label="Next"
+                            hx-get={fmt.Sprintf("/my-bids?page=%v&size=%v",(page+1),size)}
+                            hx-swap="innerHtml"
+                            hx-target="#tab-bids"
+                            hx-indicator=".htmx-loader"
+                        >
+                            Next <span aria-hidden="true"><i class="icon-long-arrow-right"
+                            if page==int(math.Ceil(float64(float64(count) / float64(size)))) {
+                                class="page-item disabled"
+                            }
+                            ></i></span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         // </div>
     }
     
 }
 
-templ TabBid(bids []models.Bid) {
+templ TabBid(page int, size int, count int64, bids []models.Bid) {
     if len(bids) == 0 {
         <p>No bid has been made yet.</p>
         <a href="/bid" class="btn btn-outline-primary-2"><span>GO BID</span><i class="icon-long-arrow-right"></i></a>
@@ -317,6 +377,65 @@ templ TabBid(bids []models.Bid) {
                     </div>
                 </article>
             }
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li 
+                        if page == 1 {
+                            class="page-item disabled"
+                        } else {
+                            class="page-item"
+                        }
+                    >
+                        <a class="page-link page-link-prev" href="#" aria-label="Previous" tabindex="-1" 
+                            if page == 1 {
+                                class="page-item disabled"
+                            } 
+                            hx-get={fmt.Sprintf("/my-bids?page=%v&size=%v",(page-1),size)}
+                            hx-swap="innerHtml"
+                            hx-target="#tab-bids"
+                            hx-indicator=".htmx-loader"
+                        >
+                            <span aria-hidden="true"><i class="icon-long-arrow-left"></i></span>Prev
+                        </a>
+                    </li>
+                    for i := 1; i<=int(math.Ceil(float64(float64(count) / float64(size)))); i++ {
+                        if page==i {
+                            <li class="page-item active" aria-current="page"><a class="page-link" href="#">{strconv.Itoa(i)}</a></li>
+                        } else {
+                            <li class="page-item"><a class="page-link" href="#"
+                                hx-get={fmt.Sprintf("/my-bids?page=%v&size=%v",(i),size)}
+                                hx-swap="innerHtml"
+                                hx-target="#tab-bids"
+                                hx-indicator=".htmx-loader"
+                            >{strconv.Itoa(i)}</a></li>
+                        }
+                    }
+                    // <li class="page-item active" aria-current="page"><a class="page-link" href="#">1</a></li>
+                    // <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    // <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    // <li class="page-item-total">of 6</li>
+                    <li 
+                        if page==int(math.Ceil(float64(float64(count) / float64(size)))) {
+                            class="page-item disabled"
+                        } else {
+                            class="page-item"
+                        }
+                    >
+                        <a class="page-link page-link-next" href="#" aria-label="Next"
+                            hx-get={fmt.Sprintf("/my-bids?page=%v&size=%v",(page+1),size)}
+                            hx-swap="innerHtml"
+                            hx-target="#tab-bids"
+                            hx-indicator=".htmx-loader"
+                        >
+                            Next <span aria-hidden="true"><i class="icon-long-arrow-right"
+                            if page==int(math.Ceil(float64(float64(count) / float64(size)))) {
+                                class="page-item disabled"
+                            }
+                            ></i></span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         // </div>
     }
     

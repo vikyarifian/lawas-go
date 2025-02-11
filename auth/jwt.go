@@ -2,7 +2,6 @@ package auth
 
 import (
 	"fmt"
-	"lawas-go/db"
 	"lawas-go/dto"
 	"lawas-go/models"
 	"time"
@@ -46,30 +45,30 @@ func GetToken(c *fiber.Ctx) (dto.Token, error) {
 		return token, err
 	}
 
-	var items []models.Item
-	var bids []models.Bid
-	var watchs []models.Watchlist
-	// var user models.User
+	// var items []models.Item
+	// var bids []models.Bid
+	// var watchs []models.Watchlist
+	// // var user models.User
 	var notif []dto.Notification
-	// db.MySql.Find(&user, "username=? AND status='A'", fmt.Sprintf("%s", claims["username"]))
-	db.MySql.Find(&items, "user_id=? AND (date + interval duration day) > now()", fmt.Sprintf("%s", claims["user_id"]))
-	db.MySql.Find(&bids, "user_id=? AND item_id in (SELECT id FROM items WHERE (date + interval duration day) > now())", fmt.Sprintf("%s", claims["user_id"]))
-	db.MySql.Find(&watchs, "user_id=? AND item_id in (SELECT id FROM items WHERE (date + interval duration day) > now())", fmt.Sprintf("%s", claims["user_id"]))
-	notif = append(notif, dto.Notification{
-		Code:  "SELL",
-		Name:  "Sells",
-		Count: len(items),
-	})
-	notif = append(notif, dto.Notification{
-		Code:  "BID",
-		Name:  "Bids",
-		Count: len(bids),
-	})
-	notif = append(notif, dto.Notification{
-		Code:  "WATCH",
-		Name:  "Watchlist",
-		Count: len(watchs),
-	})
+	// // db.MySql.Find(&user, "username=? AND status='A'", fmt.Sprintf("%s", claims["username"]))
+	// db.MySql.Find(&items, "user_id=? AND (date + interval duration day) > now()", fmt.Sprintf("%s", claims["user_id"]))
+	// db.MySql.Find(&bids, "user_id=? AND item_id in (SELECT id FROM items WHERE (date + interval duration day) > now())", fmt.Sprintf("%s", claims["user_id"]))
+	// db.MySql.Find(&watchs, "user_id=? AND item_id in (SELECT id FROM items WHERE (date + interval duration day) > now())", fmt.Sprintf("%s", claims["user_id"]))
+	// notif = append(notif, dto.Notification{
+	// 	Code:  "SELL",
+	// 	Name:  "Sells",
+	// 	Count: len(items),
+	// })
+	// notif = append(notif, dto.Notification{
+	// 	Code:  "BID",
+	// 	Name:  "Bids",
+	// 	Count: len(bids),
+	// })
+	// notif = append(notif, dto.Notification{
+	// 	Code:  "WATCH",
+	// 	Name:  "Watchlist",
+	// 	Count: len(watchs),
+	// })
 
 	return dto.Token{
 		UserID:        fmt.Sprintf("%s", claims["user_id"]),
