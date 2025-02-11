@@ -1,0 +1,189 @@
+package pages
+
+import (
+    "lawas-go/dto"
+    "lawas-go/components"
+)
+
+templ Faq(token dto.Token, isLoggedIn bool) {
+    @components.Layout(token, isLoggedIn, "FAQ") {
+        <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+            <div class="container">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">FAQ</li>
+                </ol>
+            </div><!-- End .container -->
+        </nav><!-- End .breadcrumb-nav -->
+        <div class="container">
+            <div class="page-header page-header-medium text-center" style="background-image: url('assets/images/backgrounds/cta/bg-7.jpg')">
+                <h1 class="page-title text-white">F.A.Q<span class="text-white">Frequenty Asked Questions</span></h1>
+            </div><!-- End .page-header -->
+        </div><!-- End .container -->
+        <br>
+        <div class="page-content">
+            <div class="container">
+                <h2 class="title text-center mb-3">General Questions</h2><!-- End .title -->
+                <div class="accordion accordion-rounded" id="accordion-1">
+                    <div class="card card-box card-sm bg-light">
+                        <div class="card-header" id="heading-1">
+                            <h2 class="card-title">
+                                <a role="button" data-toggle="collapse" href="#collapse-1" aria-expanded="true" aria-controls="collapse-1">
+                                    What is Lawas?
+                                </a>
+                            </h2>
+                        </div><!-- End .card-header -->
+                        <div id="collapse-1" class="collapse show" aria-labelledby="heading-1" data-parent="#accordion-1">
+                            <div class="card-body">
+                                Lawas is an online auction platform where users can bid on unique, vintage, and second-hand items. We connect buyers and sellers in a fair and transparent marketplace.
+                            </div><!-- End .card-body -->
+                        </div><!-- End .collapse -->
+                    </div><!-- End .card -->
+
+                    <div class="card card-box card-sm bg-light">
+                        <div class="card-header" id="heading-2">
+                            <h2 class="card-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse-2" aria-expanded="false" aria-controls="collapse-2">
+                                    How does Lawas work?
+                                </a>
+                            </h2>
+                        </div><!-- End .card-header -->
+                        <div id="collapse-2" class="collapse" aria-labelledby="heading-2" data-parent="#accordion-1">
+                            <div class="card-body">
+                                Sellers list items for auction, and buyers place bids within a set time frame. The highest bidder at the end of the auction wins the item.
+                            </div><!-- End .card-body -->
+                        </div><!-- End .collapse -->
+                    </div><!-- End .card -->
+
+                </div><!-- End .accordion -->
+
+                <h2 class="title text-center mb-3">For Buyers</h2><!-- End .title -->
+                <div class="accordion accordion-rounded" id="accordion-2">
+                    <div class="card card-box card-sm bg-light">
+                        <div class="card-header" id="heading2-1">
+                            <h2 class="card-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse2-1" aria-expanded="false" aria-controls="collapse2-1">
+                                    How do I place a bid?
+                                </a>
+                            </h2>
+                        </div><!-- End .card-header -->
+                        <div id="collapse2-1" class="collapse" aria-labelledby="heading2-1" data-parent="#accordion-2">
+                            <div class="card-body">
+                                To place a bid, create an account, find an item you like, and enter your bid amount. If someone outbids you, you will receive a notification.
+                            </div><!-- End .card-body -->
+                        </div><!-- End .collapse -->
+                    </div><!-- End .card -->
+
+                    <div class="card card-box card-sm bg-light">
+                        <div class="card-header" id="heading2-2">
+                            <h2 class="card-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse2-2" aria-expanded="false" aria-controls="collapse2-2">
+                                    Is there a registration fee?
+                                </a>
+                            </h2>
+                        </div><!-- End .card-header -->
+                        <div id="collapse2-2" class="collapse" aria-labelledby="heading2-2" data-parent="#accordion-2">
+                            <div class="card-body">
+                                No, registering as a buyer is free! However, certain premium features may have additional costs.
+                            </div><!-- End .card-body -->
+                        </div><!-- End .collapse -->
+                    </div><!-- End .card -->
+
+                    <div class="card card-box card-sm bg-light">
+                        <div class="card-header" id="heading2-3">
+                            <h2 class="card-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse2-3" aria-expanded="false" aria-controls="collapse2-3">
+                                    What happens if I win an auction?
+                                </a>
+                            </h2>
+                        </div><!-- End .card-header -->
+                        <div id="collapse2-3" class="collapse" aria-labelledby="heading2-3" data-parent="#accordion-2">
+                            <div class="card-body">
+                                You will receive a confirmation email with payment instructions. Once the payment is completed, the seller will ship the item to you.
+                            </div><!-- End .card-body -->
+                        </div><!-- End .collapse -->
+                    </div><!-- End .card -->
+
+                    <div class="card card-box card-sm bg-light">
+                        <div class="card-header" id="heading2-4">
+                            <h2 class="card-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse2-4" aria-expanded="false" aria-controls="collapse2-4">
+                                    Can I cancel a bid?
+                                </a>
+                            </h2>
+                        </div><!-- End .card-header -->
+                        <div id="collapse2-4" class="collapse" aria-labelledby="heading2-4" data-parent="#accordion-2">
+                            <div class="card-body">
+                                No, all bids are final. Please make sure you want the item before placing a bid.
+                            </div><!-- End .card-body -->
+                        </div><!-- End .collapse -->
+                    </div><!-- End .card -->
+                </div><!-- End .accordion -->
+
+                <h2 class="title text-center mb-3">For Sellers</h2><!-- End .title -->
+                <div class="accordion accordion-rounded" id="accordion-3">
+                    <div class="card card-box card-sm bg-light">
+                        <div class="card-header" id="heading3-1">
+                            <h2 class="card-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse3-1" aria-expanded="false" aria-controls="collapse3-1">
+                                    How do I list an item?
+                                </a>
+                            </h2>
+                        </div><!-- End .card-header -->
+                        <div id="collapse3-1" class="collapse" aria-labelledby="heading3-1" data-parent="#accordion-3">
+                            <div class="card-body">
+                                Log in to your account, go to “Sell,” upload item details, set a starting price and duration, and publish your auction.
+                            </div><!-- End .card-body -->
+                        </div><!-- End .collapse -->
+                    </div><!-- End .card -->
+
+                    <div class="card card-box card-sm bg-light">
+                        <div class="card-header" id="heading3-2">
+                            <h2 class="card-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse3-2" aria-expanded="false" aria-controls="collapse3-2">
+                                    Are there listing fees?
+                                </a>
+                            </h2>
+                        </div><!-- End .card-header -->
+                        <div id="collapse3-2" class="collapse" aria-labelledby="heading3-2" data-parent="#accordion-3">
+                            <div class="card-body">
+                                Listing an item is free, but a small commission is charged when the item is sold.
+                            </div><!-- End .card-body -->
+                        </div><!-- End .collapse -->
+                    </div><!-- End .card -->
+
+                    <div class="card card-box card-sm bg-light">
+                        <div class="card-header" id="heading3-3">
+                            <h2 class="card-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse3-3" aria-expanded="false" aria-controls="collapse3-3">
+                                    How do I receive payments?
+                                </a>
+                            </h2>
+                        </div><!-- End .card-header -->
+                        <div id="collapse3-3" class="collapse" aria-labelledby="heading3-3" data-parent="#accordion-3">
+                            <div class="card-body">
+                                Once the auction ends and the buyer completes payment, funds will be transferred to your registered payment method.
+                            </div><!-- End .card-body -->
+                        </div><!-- End .collapse -->
+                    </div><!-- End .card -->
+
+                    <div class="card card-box card-sm bg-light">
+                        <div class="card-header" id="heading3-4">
+                            <h2 class="card-title">
+                                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse3-4" aria-expanded="false" aria-controls="collapse3-4">
+                                    Can I set a reserve price?
+                                </a>
+                            </h2>
+                        </div><!-- End .card-header -->
+                        <div id="collapse3-4" class="collapse" aria-labelledby="heading3-4" data-parent="#accordion-3">
+                            <div class="card-body">
+                                Yes! A reserve price ensures your item won’t be sold unless bidding reaches a minimum amount you set.
+                            </div><!-- End .card-body -->
+                        </div><!-- End .collapse -->
+                    </div><!-- End .card -->
+                </div><!-- End .accordion -->
+            </div><!-- End .container -->
+        </div><!-- End .page-content -->
+    }
+}
