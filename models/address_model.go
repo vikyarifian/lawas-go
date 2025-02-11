@@ -6,11 +6,14 @@ type Address struct {
 	No             int        `gorm:"column:no;primaryKey" json:"-,omitempty" form:"-"`
 	ID             string     `gorm:"column:id;unique" json:"id,omitempty" form:"id"`
 	UserID         string     `gorm:"column:user_id" json:"user_id,omitempty" form:"user_id"`
-	Phone          string     `gorm:"column:phone;" json:"phone,omitempty" form:"phone"`
+	BillName       string     `gorm:"column:bill_name" json:"bill_name,omitempty" form:"bill_name"`
+	BillPhone      string     `gorm:"column:bill_phone;" json:"bill_phone,omitempty" form:"bill_phone"`
 	BillAddress    string     `gorm:"column:bill_address" json:"bill_address,omitempty" form:"bill_address"`
 	BillCity       string     `gorm:"column:bill_city" json:"bill_city,omitempty" form:"bill_city"`
 	BillPostalCode string     `gorm:"column:bill_postal_code" json:"bill_postal_code,omitempty" form:"bill_postal_code"`
 	BillCountry    string     `gorm:"column:bill_country" json:"bill_country,omitempty" form:"bill_country"`
+	ShipName       string     `gorm:"column:ship_name" json:"ship_name,omitempty" form:"ship_name"`
+	ShipPhone      string     `gorm:"column:ship_phone;" json:"ship_phone,omitempty" form:"ship_phone"`
 	ShipAddress    string     `gorm:"column:ship_address" json:"ship_address,omitempty" form:"ship_address"`
 	ShipCity       string     `gorm:"column:ship_city" json:"ship_city,omitempty" form:"ship_city"`
 	ShipPostalCode string     `gorm:"column:ship_postal_code" json:"ship_postal_code,omitempty" form:"ship_postal_code"`
@@ -24,11 +27,15 @@ type Address struct {
 // CREATE TABLE `db_lawas`.`addresses` (
 // 	`no` INT NOT NULL AUTO_INCREMENT,
 // 	`id` VARCHAR(128) NOT NULL DEFAULT '0',
-// `phone` VARCHAR(45) NULL DEFAULT ' ' ,
+//  `user_id` VARCHAR(128) NULL DEFAULT ' ' ,
+//  `bill_name` VARCHAR(50) NULL DEFAULT ' ',
+//  `bill_phone` VARCHAR(45) NULL DEFAULT ' ' ,
 // 	`bill_address` VARCHAR(100) NULL DEFAULT ' ',
 // 	`bill_city` VARCHAR(45) NULL DEFAULT ' ',
 // 	`bill_postal_code` VARCHAR(25) NULL DEFAULT ' ',
 // 	`bill_country` VARCHAR(45) NULL DEFAULT ' ',
+//  `ship_name` VARCHAR(50) NULL DEFAULT ' ',
+//  `ship_phone` VARCHAR(45) NULL DEFAULT ' ',
 // 	`ship_address` VARCHAR(100) NULL DEFAULT ' ',
 // 	`ship_city` VARCHAR(45) NULL DEFAULT ' ',
 // 	`ship_postal_code` VARCHAR(45) NULL,
