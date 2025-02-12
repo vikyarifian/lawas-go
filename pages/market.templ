@@ -1,0 +1,282 @@
+package pages
+
+import (
+    "lawas-go/dto"
+    "lawas-go/models"
+    "lawas-go/components"
+
+    "fmt"
+    "time"
+    "math"
+    "strconv"
+)
+
+templ Market(categories []models.Category, token dto.Token, isLoggedIn bool) {
+    @components.Layout(token, isLoggedIn, "Market") {
+        <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
+            <div class="container">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Market</li>
+                </ol>
+            </div><!-- End .container -->
+        </nav><!-- End .breadcrumb-nav -->
+        <div class="page-content">
+            <div class="container">
+                <div class="row">
+                    <aside class="col-lg-3 order-lg-first">
+                        <div class="sidebar sidebar-shop">
+                            <div class="widget widget-clean">
+                                <label>Filters:</label>
+                                <a href="#" class="sidebar-filter-clear"
+                                    hx-get="/items"
+                                    hx-swap="innerHtml"
+                                    hx-target="#item-list"
+                                    hx-trigger="click"
+                                    hx-indicator=".htmx-loader"
+                                >Clean All</a>
+                            </div><!-- End .widget widget-clean -->
+
+                            <div class="widget widget-collapsible">
+                                <h3 class="widget-title">
+                                    <a data-toggle="collapse" href="#widget-1" role="button" aria-expanded="true" aria-controls="widget-1">
+                                        Category
+                                    </a>
+                                </h3><!-- End .widget-title -->
+
+                                <div class="collapse show" id="widget-1">
+                                    <div class="widget-body">
+                                        <div class="filter-items filter-items-count">
+                                            <fieldset id="search">
+                                                for _, cate := range categories {
+                                                    <div class="filter-item">
+                                                        <div class="custom-control custom-radio">
+                                                            <input type="radio" class="custom-control-input" id={cate.ID} name="category" value={cate.Name}
+                                                                hx-get="/items"
+                                                                hx-swap="innerHtml"
+                                                                hx-target="#item-list"
+                                                                hx-trigger="click"
+                                                                hx-indicator=".htmx-loader"
+                                                            >
+                                                            <label class="custom-control-label" for={cate.ID}>{cate.Name}</label>
+                                                        </div><!-- End .custom-checkbox -->
+                                                        // <span class="item-count">3</span>
+                                                    </div><!-- End .filter-item -->
+                                                }
+                                            </fieldset>
+                                        </div><!-- End .filter-items -->
+                                    </div><!-- End .widget-body -->
+                                </div><!-- End .collapse -->
+                            </div><!-- End .widget -->
+                        </div><!-- End .sidebar sidebar-shop -->
+                    </aside><!-- End .col-lg-3 -->
+                    <div class="col-lg-9" id="item-list" class="row justify-content-center"
+                        hx-get="/items"               
+                        hx-swap="innerHtml"
+                        hx-target="#item-list"
+                        hx-indicator=".htmx-loader"
+                        hx-trigger="load"> 
+                    </div><!-- End .col-lg-9 -->
+                    
+                </div><!-- End .row -->
+            </div><!-- End .container -->
+        </div><!-- End .page-content -->
+    }
+}
+
+templ ItemList(items []models.Item, page int, size int, sort string, count int64, category string, search string, token dto.Token, isLoggedIn bool) {
+    <div class="header-center col-lg-9">
+        <div class="header-search header-search-extended header-search-visible d-none d-lg-block">
+            <a href="#" class="search-toggle" role="button"><i class="icon-search"></i></a>
+            <form action="#" method="get">
+                <div class="header-search-wrapper search-wrapper-wide">
+                    <label for="q" class="sr-only">Search</label>
+                    <button class="btn btn-primary" type="submit" style="background: transparent;color: #777;"><i class="icon-search"></i></button>
+                    <input type="search" class="form-control" name="search" id="search_text" 
+                        placeholder="Search item ..." style="border-radius: 30px 0 0 30px;
+                                                            border-top-left-radius: 30px;
+                                                            border-top-right-radius: 30px;
+                                                            border-bottom-right-radius: 30px;
+                                                            border-bottom-left-radius: 30px;" required value={search}
+                        hx-get={fmt.Sprintf("/items?page=%v&size=%v&sortby=%s&category=%s",page,size,sort,category)}
+                        hx-swap="innerHtml"
+                        hx-target="#item-list"
+                        hx-indicator=".htmx-loader"
+                        hx-trigger="keyup changed delay:700ms">
+                </div><!-- End .header-search-wrapper -->
+            </form>
+        </div><!-- End .header-search -->
+    </div>
+    <div class="toolbox">
+        <div class="toolbox-left">
+            <div class="toolbox-info">
+                Showing <span>{strconv.Itoa(len(items))} of {strconv.Itoa(int(count))}</span> Products
+            </div><!-- End .toolbox-info -->
+        </div><!-- End .toolbox-left -->
+
+        <div class="toolbox-right">
+            <div class="toolbox-sort">
+                <label for="sortby">Sort by:</label>
+                <div class="select-custom">
+                    <select name="sortby" id="sortby" class="form-control"
+                        hx-get={fmt.Sprintf("/items?page=%v&size=%v&search=%s&category=%s",page,size,search,category)}
+                        hx-swap="innerHtml"
+                        hx-target="#item-list"
+                        hx-indicator=".htmx-loader"
+                        hx-trigger="change"
+                    >
+                        <option value="date" name="sortby" 
+                            if sort=="date" {
+                                selected="selected"
+                            }>Date</option>
+                        <option value="top" name="sortby"
+                            if sort=="top" {
+                                selected="selected"
+                            }>Most Popular</option>
+                        <option value="bid" name="sortby"
+                            if sort=="bid" {
+                                selected="selected"
+                            }>Most Bids</option>
+                    </select>
+                </div>
+            </div><!-- End .toolbox-sort -->
+        </div><!-- End .toolbox-right -->
+    </div><!-- End .toolbox -->
+
+    <div>
+        <div class="products mb-3">
+            <div class="row justify-content-center">
+                for _, item := range items {
+                    <div class="col-6 col-md-4 col-lg-4 col-xl-3">
+                        <div class="product product-7 text-center">
+                            <figure class="product-media">
+                                if (time.Now().Sub(*item.Date).Hours())/24 < 3 && (time.Now().Sub(*item.Date).Hours())/24 > 0 {
+                                    <span class="product-label label-circle label-new">New</span>
+                                }
+                                if (time.Now().Sub(item.Date.AddDate(0, 0, item.Duration)).Hours())/24 < 0 && (time.Now().Sub(item.Date.AddDate(0, 0, item.Duration)).Hours())/24 > -4 {
+                                    <span class="product-label label-circle label-out">Nearly</span>
+                                }
+                                if item.Date.AddDate(0,0,item.Duration).Before(time.Now()) {
+                                    <span class="product-label label-circle label-sale" style="font-size: 11px;">Closed</span>
+                                }
+                                if len(item.Bids) > 10 {
+                                    <span class="product-label label-circle label-top">Top</span>
+                                }
+                                <a href={templ.SafeURL(fmt.Sprintf("/item?id=%s", item.ID))}>
+                                    <img src={item.Photo} alt={item.Name} class="product-image" style="max-height:20rem">
+                                </a>
+
+                                <div class="product-action-vertical"
+                                    if isLoggedIn {
+                                        hx-get={fmt.Sprintf("/add-remove-watchlist/?item_id=%s",item.ID)}             
+                                        hx-swap="innerHtml"
+                                        hx-trigger="click"
+                                        hx-indicator=".htmx-loader"
+                                    }
+                                >
+                                    if len(item.Watchlists) > 0 {
+                                        @components.AddRemoveWatchlist(item.Watchlists[0].ID, isLoggedIn)
+                                    } else {
+                                        @components.AddRemoveWatchlist("", isLoggedIn)
+                                    }
+                                </div><!-- End .product-action-vertical -->
+
+                                // <div class="product-action">
+                                //     <a href="#" class="btn-product btn-cart"><span>add to cart</span></a>
+                                // </div><!-- End .product-action -->
+                            </figure><!-- End .product-media -->
+
+                            <div class="product-body">
+                                <div class="product-cat">
+                                    <a href="#">{item.Category.Name} </a>
+                                </div><!-- End .product-cat -->
+                                <h3 class="product-title"><a href={templ.SafeURL(fmt.Sprintf("/item?id=%s", item.ID))}>{item.Name}</a></h3><!-- End .product-title -->
+                                <div class="product-price">
+                                    {item.Currency.Code}{fmt.Sprintf("%.2f", item.OpenBid)}
+                                </div><!-- End .product-price -->
+                                // <div class="ratings-container">
+                                //     <div class="ratings">
+                                //         <div class="ratings-val" style="width: 20%;"></div><!-- End .ratings-val -->
+                                //     </div><!-- End .ratings -->
+                                //     <span class="ratings-text">( 2 Reviews )</span>
+                                // </div><!-- End .rating-container -->
+
+                                // <div class="product-nav product-nav-thumbs">
+                                //     <a href="#" class="active">
+                                //         <img src="assets/images/products/product-4-thumb.jpg" alt="product desc">
+                                //     </a>
+                                //     <a href="#">
+                                //         <img src="assets/images/products/product-4-2-thumb.jpg" alt="product desc">
+                                //     </a>
+
+                                //     <a href="#">
+                                //         <img src="assets/images/products/product-4-3-thumb.jpg" alt="product desc">
+                                //     </a>
+                                // </div><!-- End .product-nav -->
+                            </div><!-- End .product-body -->
+                        </div><!-- End .product -->
+                    </div><!-- End .col-sm-6 col-lg-4 col-xl-3 -->
+                }
+            </div><!-- End .row -->
+        </div><!-- End .products -->
+    
+    </div><!-- End .products -->
+    if count > 0 {
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li
+                    if page == 1 {
+                        class="page-item disabled"
+                    } else {
+                        class="page-item"
+                    } 
+                >
+                    <a class="page-link page-link-prev" href="#" aria-label="Previous" tabindex="-1" 
+                        if page == 1 {
+                            aria-disabled="true"
+                        } 
+                        hx-get={fmt.Sprintf("/items?page=%v&size=%v&sortby=%s&search=%s&category=%s",(page-1),size,sort,search,category)}
+                        hx-swap="innerHtml"
+                        hx-target="#item-list"
+                        hx-indicator=".htmx-loader"
+                    >
+                        <span aria-hidden="true"><i class="icon-long-arrow-left"></i></span>Prev
+                    </a>
+                </li>
+                for i := 1; i<=int(math.Ceil(float64(float64(count) / float64(size)))); i++ {
+                    if page==i {
+                        <li class="page-item active" aria-current="page"><a class="page-link" href="#">{strconv.Itoa(i)}</a></li>
+                    } else {
+                        <li class="page-item"><a class="page-link" href="#"
+                            hx-get={fmt.Sprintf("/items?page=%v&size=%v&sortby=%s&search=%s&category=%s",(i),size,sort,search,category)}
+                            hx-swap="innerHtml"
+                            hx-target="#item-list"
+                            hx-trigger="click"
+                            hx-indicator=".htmx-loader"
+                        >{strconv.Itoa(i)}</a></li>
+                    }
+                }
+                <li 
+                    if page==int(math.Ceil(float64(float64(count) / float64(size)))) {
+                        class="page-item disabled"
+                    } else {
+                        class="page-item"
+                    }
+                >
+                    <a class="page-link page-link-next" href="#" aria-label="Next"
+                        hx-get={fmt.Sprintf("/items?page=%v&size=%v&sortby=%s&search=%s&category=%s",(page+1),size,sort,search,category)}
+                        hx-swap="innerHtml"
+                        hx-target="#item-list"
+                        hx-indicator=".htmx-loader"
+                    >
+                        Next <span aria-hidden="true"><i class="icon-long-arrow-right"
+                        if page==int(math.Ceil(float64(float64(count) / float64(size)))) {
+                            class="page-item disabled"
+                        }
+                        ></i></span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+}

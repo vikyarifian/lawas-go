@@ -467,6 +467,7 @@ templ TabSell(page int, size int, count int64, sells []models.Item) {
                                 hx-get={fmt.Sprintf("/my-sells?page=%v&size=%v",(i),size)}
                                 hx-swap="innerHtml"
                                 hx-target="#tab-sells"
+                                hx-trigger="click"
                                 hx-indicator=".htmx-loader"
                             >{strconv.Itoa(i)}</a></li>
                         }
@@ -621,6 +622,7 @@ templ TabBid(page int, size int, count int64, bids []models.Bid) {
                                 hx-get={fmt.Sprintf("/my-bids?page=%v&size=%v",(i),size)}
                                 hx-swap="innerHtml"
                                 hx-target="#tab-bids"
+                                hx-trigger="click"
                                 hx-indicator=".htmx-loader"
                             >{strconv.Itoa(i)}</a></li>
                         }
@@ -775,6 +777,7 @@ templ TabWatch(page int, size int, count int64, watchs []models.Watchlist) {
                                 hx-get={fmt.Sprintf("/my-watchs?page=%v&size=%v",(i),size)}
                                 hx-swap="innerHtml"
                                 hx-target="#tab-watchs"
+                                hx-trigger="click"
                                 hx-indicator=".htmx-loader"
                             >{strconv.Itoa(i)}</a></li>
                         }
