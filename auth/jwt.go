@@ -78,6 +78,7 @@ func GetToken(c *fiber.Ctx) (dto.Token, error) {
 		Level:         fmt.Sprintf("%s", claims["level"]),
 		Token:         c.Get("Authorization"),
 		Notifications: notif,
+		IsAuth:        true,
 	}, nil
 }
 

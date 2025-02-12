@@ -159,6 +159,31 @@ templ HtmlWrapper(token dto.Token, isLoggedIn bool, title string) {
 			.htmx-request.loaded-content {
 				display: none;
 			}
+
+			.scoll-pane {
+				overflow: auto;
+				width: 40vw;
+				height: 32vh;
+				background: hsl(0, 0%, 100%);
+				padding: 1rem;
+				border-radius: 0.5rem;
+			}
+
+			::-webkit-scrollbar {
+				width: 12px; /* Mostly for vertical scrollbars */
+				height: 12px; /* Mostly for horizontal scrollbars */
+			}
+			::-webkit-scrollbar-thumb { /* Foreground */
+				background: var(--scrollbar-foreground);
+				background: rgb(255, 255, 255);
+				border-radius: 999px;
+				border: 3px solid transparent;
+				background-clip: padding-box;
+			}
+			::-webkit-scrollbar-track { /* Background */
+				background: var(--scrollbar-background);
+				background: transparent;
+			}
         </style>
         <body>
             <div class="page-wrapper">

@@ -56,9 +56,20 @@ func WebRoutes(app *fiber.App) {
 	app.Get("/item", func(c *fiber.Ctx) error {
 		var item models.Item
 		var token dto.Token
-		token, _ = auth.GetToken(c)
+		token, _ = auth.IsAuthenticated(c)
 
-		db.MySql.Where("id=?", c.Query("id")).First(&item)
+		err := db.MySql.Where("id=?", c.Query("id")).Preload("User").Preload("Category").Preload("Currency").Preload("Bids", func(db *gorm.DB) *gorm.DB {
+			return db.Order("Bid Desc").Preload("Watchlist").Preload("User")
+		}).Preload("Watchlists", func(db *gorm.DB) *gorm.DB {
+			return db.Where("user_id=?", token.UserID)
+		}).First(&item).Error
+		if err != nil {
+			return utils.Render(c, pages.NotFound(auth.IsAuthenticated(c)))
+		}
+		for i, a := range item.Watchlists {
+			fmt.Println("No: " + strconv.Itoa(i))
+			fmt.Println("Name" + a.UserID)
+		}
 
 		return utils.Render(c, pages.Item(item, token, token.IsAuth))
 	})
@@ -80,7 +91,7 @@ func WebRoutes(app *fiber.App) {
 			if err != nil {
 				fmt.Println(err.Error())
 			}
-			return utils.Render(c, components.AddRemoveWatchlist(""))
+			return utils.Render(c, components.AddRemoveWatchlist("", token.IsAuth))
 		} else {
 			watchlist.UserID = token.UserID
 			watchlist.ItemID = c.Query("item_id")
@@ -88,7 +99,7 @@ func WebRoutes(app *fiber.App) {
 			if err != nil {
 				fmt.Println(err.Error())
 			}
-			return utils.Render(c, components.AddRemoveWatchlist(watchlist.ItemID))
+			return utils.Render(c, components.AddRemoveWatchlist(watchlist.ItemID, token.IsAuth))
 		}
 	})
 
@@ -97,7 +108,9 @@ func WebRoutes(app *fiber.App) {
 		var token dto.Token
 		tipe := c.Query("tipe")
 		token, _ = auth.IsAuthenticated(c)
-		db.MySql.Where("user_id=?", token.UserID).First(&address)
+		if err := db.MySql.Where("user_id=?", token.UserID).First(&address).Error; err != nil {
+			address = models.Address{}
+		}
 		return utils.Render(c, pages.TabAddress(tipe, address))
 	})
 
@@ -107,7 +120,10 @@ func WebRoutes(app *fiber.App) {
 		var p models.Address
 		tipe := c.Query("tipe")
 		token, _ = auth.IsAuthenticated(c)
-		db.MySql.Where("user_id=?", token.UserID).First(&address)
+		if err := db.MySql.Where("user_id=?", token.UserID).First(&address); err != nil {
+			address = models.Address{}
+			address.UserID = token.UserID
+		}
 		// return utils.Render(c, components.ErrorAlert("errr", tipe), templ.WithStatus(http.StatusBadRequest))
 		if err := c.BodyParser(&p); err != nil {
 			log.Println(err.Error())
@@ -129,6 +145,8 @@ func WebRoutes(app *fiber.App) {
 			address.ShipPostalCode = p.ShipPostalCode
 			address.ShipCountry = p.ShipCountry
 		}
+		address.UpdatedAt = &time.Time{}
+		address.UpdatedBy = token.Username
 		err := db.MySql.Save(&address).Error
 		if err != nil {
 			log.Println(err.Error())
@@ -410,6 +428,10 @@ func WebRoutes(app *fiber.App) {
 		auth.ClearSession(c)
 		c.Response().Header.Set("HX-Redirect", "/login")
 		return c.Redirect("/")
+	})
+
+	app.Use(func(c *fiber.Ctx) error {
+		return utils.Render(c, pages.NotFound(auth.IsAuthenticated(c)))
 	})
 
 }
