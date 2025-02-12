@@ -63,11 +63,11 @@ templ Item(item models.Item, token dto.Token, isLoggedIn bool) {
                                 <h1 class="product-title">{item.Name}</h1><!-- End .product-title -->
 
                                 <div class="ratings-container">
-                                    <a class="ratings-text" href="#" id="review-link">{item.User.Name} &nbsp; </a>
-                                    <div class="ratings">
-                                        <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
-                                    </div><!-- End .ratings -->
-                                    <a class="ratings-text" href="#" id="review-link">( 2 Reviews )</a>
+                                    <a class="ratings-text" href="#" id="review-link">By {item.User.Name} &nbsp; </a>
+                                    // <div class="ratings">
+                                    //     <div class="ratings-val" style="width: 80%;"></div><!-- End .ratings-val -->
+                                    // </div><!-- End .ratings -->
+                                    // <a class="ratings-text" href="#" id="review-link">( {strconv.Itoa(len(item.Bids))} Reviews )</a>
                                 </div><!-- End .rating-container -->
 
                                 <div class="product-price">
@@ -191,14 +191,14 @@ templ Item(item models.Item, token dto.Token, isLoggedIn bool) {
                                                     for i,bid := range item.Bids {    
                                                         <div class="comment-user" >
                                                             if i==0 {
-                                                                <h4 style="color: #39f;"><a href="#">
+                                                                <h4 style="color: #39f;">
                                                                     {strconv.Itoa(i+1)}. {item.Currency.Code}{fmt.Sprintf("%.2f", bid.Bid)} ({bid.User.Name[0:1]}{strings.Repeat("*", len(strings.Split(bid.User.Name," ")[0])-1)} 
                                                                     if len(strings.Split(bid.User.Name," "))>1 {
                                                                         {strings.Split(bid.User.Name," ")[1][0:1]}{strings.Repeat("*", len(strings.Split(bid.User.Name," ")[1])-1)}
                                                                     })  &nbsp;
                                                                     if item.Date.AddDate(0,0,item.Duration).Before(time.Now()) {
                                                                         
-                                                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="25px" height="25px">
+                                                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" top="-1rem" width="25px" height="25px">
                                                                             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                                                                             <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
                                                                             <g id="SVGRepo_iconCarrier"> 
@@ -217,7 +217,7 @@ templ Item(item models.Item, token dto.Token, isLoggedIn bool) {
                                                                     } else {
                                                                         <i class="la la-history" style="font-size: 2rem;"></i>
                                                                     }
-                                                                </a></h4>
+                                                                </h4>
                                                                 <span class="comment-date">{bid.Date.Format("January, 02 2006 15:04")}</span>
                                                             }
                                                             if (i>0 && item.Date.AddDate(0,0,item.Duration).After(time.Now())) || (i>0 && i<3 && item.Date.AddDate(0,0,item.Duration).Before(time.Now())) {

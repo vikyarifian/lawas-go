@@ -21,6 +21,24 @@ import (
 	"gorm.io/gorm"
 )
 
+func itemList(token dto.Token, page int, size int, sort string, count int64, category string, search string) ([]models.Item, int64, error) {
+	var items []models.Item
+	err := db.MySql.Table("items").Select("items.*", "watchlists.*", "bids.*", "categories.Name as CategoryName").
+		Joins("LEFT JOIN (SELECT Count(*) count1, item_id FROM watchlists GROUP BY item_id) as watchlists ON watchlists.item_id=items.id").
+		Joins("LEFT JOIN (SELECT Count(*) count2, item_id FROM bids GROUP BY item_id) as bids ON bids.item_id=items.id").
+		Joins("LEFT JOIN categories ON categories.id=items.category_id").
+		Where(fmt.Sprintf("CONCAT(items.name,items.description,IFNULL(categories.name,'')) LIKE '%s%s%s' ", "%", search, "%")).
+		Where(fmt.Sprintf(" CASE WHEN '%s'!='' THEN IFNULL(categories.name,'') ELSE '' END LIKE '%s%s%s' ", category, "%", category, "%")).
+		Preload("User").Preload("Category").Preload("Currency").Preload("Bids", func(db *gorm.DB) *gorm.DB {
+		return db.Order("Bid Desc").Preload("Watchlist").Preload("User")
+	}).Preload("Watchlists", func(db *gorm.DB) *gorm.DB {
+		return db.Where("user_id=?", token.UserID)
+	}).Order(sort).Find(&items).Count(&count).Offset((page - 1) * size).Limit(size).
+		Find(&items).Error
+
+	return items, count, err
+}
+
 func ApiRoutes(app *fiber.App) {
 
 	// api := app.Group("/api/v1")
@@ -59,19 +77,79 @@ func WebRoutes(app *fiber.App) {
 		token, _ = auth.IsAuthenticated(c)
 
 		err := db.MySql.Where("id=?", c.Query("id")).Preload("User").Preload("Category").Preload("Currency").Preload("Bids", func(db *gorm.DB) *gorm.DB {
-			return db.Order("Bid Desc").Preload("Watchlist").Preload("User")
+			return db.Order("Bid Desc, Date").Preload("Watchlist").Preload("User")
 		}).Preload("Watchlists", func(db *gorm.DB) *gorm.DB {
 			return db.Where("user_id=?", token.UserID)
 		}).First(&item).Error
 		if err != nil {
 			return utils.Render(c, pages.NotFound(auth.IsAuthenticated(c)))
 		}
-		for i, a := range item.Watchlists {
-			fmt.Println("No: " + strconv.Itoa(i))
-			fmt.Println("Name" + a.UserID)
-		}
 
 		return utils.Render(c, pages.Item(item, token, token.IsAuth))
+	})
+
+	app.Get("/market", func(c *fiber.Ctx) error {
+		var categories []models.Category
+		db.MySql.Order("name").Find(&categories)
+		var token dto.Token
+		token, _ = auth.IsAuthenticated(c)
+		return utils.Render(c, pages.Market(categories, token, token.IsAuth))
+	})
+
+	app.Get("/items", func(c *fiber.Ctx) error {
+		var items []models.Item
+		var token dto.Token
+		token, _ = auth.IsAuthenticated(c)
+
+		search := c.Query("search")
+		category := c.Query("category")
+		// if search != "" {
+		// 	time.Sleep(50 * time.Millisecond)
+		// }
+		sort := c.Query("sortby")
+		if sort == "" {
+			sort = "date"
+		}
+		sortBy := sort
+		switch strings.ToLower(sort) {
+		case "top":
+			sortBy = "watchlists.count1 desc, bids.count2 desc"
+		case "bid":
+			sortBy = "bids.count2 desc"
+		default:
+			sortBy = sort
+		}
+
+		pageStr := c.Query("page")
+		if pageStr == "" {
+			pageStr = "1"
+		}
+
+		page, err := strconv.Atoi(pageStr)
+		if err != nil {
+			page = 1
+		}
+
+		pageSize := c.Query("size")
+		if pageSize == "" {
+			pageSize = "12"
+		}
+
+		size, err := strconv.Atoi(pageSize)
+		if err != nil {
+			size = 12
+		}
+
+		var count int64 = 0
+
+		items, count, err = itemList(token, page, size, sortBy, count, category, search)
+
+		if err != nil || count == 0 {
+			page = 1
+			items, count, err = itemList(token, page, size, sortBy, count, category, search)
+		}
+
+		return utils.Render(c, pages.ItemList(items, page, size, sort, count, category, search, token, token.IsAuth))
 	})
 
 	app.Get("/dashboard", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {

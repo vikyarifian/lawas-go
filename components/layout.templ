@@ -219,17 +219,35 @@ templ HtmlWrapper(token dto.Token, isLoggedIn bool, title string) {
                             <li class="nav-item">
                                 <a class="nav-link active" id="mobile-menu-link" data-toggle="tab" href="#mobile-menu-tab" role="tab" aria-controls="mobile-menu-tab" aria-selected="true">Menu</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" id="mobile-cats-link" data-toggle="tab" href="#mobile-cats-tab" role="tab" aria-controls="mobile-cats-tab" aria-selected="false">Categories</a>
-                            </li>
+                            // <li class="nav-item">
+                            //     <a class="nav-link" id="mobile-cats-link" data-toggle="tab" href="#mobile-cats-tab" role="tab" aria-controls="mobile-cats-tab" aria-selected="false">Categories</a>
+                            // </li>
                         </ul>
+                        <div class="tab-content">
+							<div class="tab-pane fade show active" id="mobile-menu-tab" role="tabpanel" aria-labelledby="mobile-menu-link">
+								<nav class="mobile-nav">
+									<ul class="mobile-menu">
+										<li class="active">
+											<a href="/">Home</a>
+										</li>
+										<li>
+											<a href="/market">Market</a>
+										</li>
+										<li>
+											<a href="/contact" class="sf-with-ul">Contact</a>
+										</li>
+										<li>
+											<a href="/about">About</a>
+										</li>
+										<li>
+											<a href="/faq">FAQs</a>
+										</li>
+									</ul>
+								</nav><!-- End .mobile-nav -->
+							</div><!-- .End .tab-pane -->
+							
+						</div><!-- End .tab-content -->
                         
-                        <div class="social-icons">
-                            <a href="#" class="social-icon" target="_blank" title="Facebook"><i class="icon-facebook-f"></i></a>
-                            <a href="#" class="social-icon" target="_blank" title="Twitter"><i class="icon-twitter"></i></a>
-                            <a href="#" class="social-icon" target="_blank" title="Instagram"><i class="icon-instagram"></i></a>
-                            <a href="#" class="social-icon" target="_blank" title="Youtube"><i class="icon-youtube"></i></a>
-                        </div><!-- End .social-icons -->
                     </div><!-- End .mobile-menu-wrapper -->
                 </div><!-- End .mobile-menu-container -->
 
