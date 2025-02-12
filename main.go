@@ -178,21 +178,25 @@ func BulProduct() {
 					db.MySql.Where("no=?", rand.IntN(50)).First(&bidders)
 					bidhash := GetMD5Hash(strconv.Itoa(bNo))
 					var bid = models.Bid{
-						No:        bNo,
-						ID:        bidhash,
-						UserID:    bidders.ID,
-						ItemID:    product.ID,
-						Bid:       p.Price + 0.2 + float64(x),
-						Date:      func(t time.Time) *time.Time { return &t }(firstOfMonth.AddDate(0, 0, i+1+x)),
+						No:     bNo,
+						ID:     bidhash,
+						UserID: bidders.ID,
+						ItemID: product.ID,
+						Bid:    p.Price + 0.1 + float64(x),
+						Date: func(t time.Time) *time.Time { return &t }(firstOfMonth.AddDate(0, 0, i+1+x).Add(time.Hour*time.Duration(rand.IntN(2)*60) +
+							time.Minute*time.Duration(rand.IntN(2)*60) +
+							time.Second*time.Duration(rand.IntN(2)*1000))),
 						CreatedBy: bidders.Username,
 						UpdatedBy: bidders.Username,
 						CreatedAt: func(t time.Time) *time.Time { return &t }(firstOfMonth.AddDate(0, 0, i+1+x)),
 						UpdatedAt: func(t time.Time) *time.Time { return &t }(firstOfMonth.AddDate(0, 0, i+1+x)),
 					}
 					var watch = models.Watchlist{
-						UserID:    bidders.ID,
-						ItemID:    product.ID,
-						Date:      func(t time.Time) *time.Time { return &t }(firstOfMonth.AddDate(0, 0, i+1+x)),
+						UserID: bidders.ID,
+						ItemID: product.ID,
+						Date: func(t time.Time) *time.Time { return &t }(firstOfMonth.AddDate(0, 0, i+1+x).Add(time.Hour*time.Duration(rand.IntN(2)) +
+							time.Minute*time.Duration(rand.IntN(2)) +
+							time.Second*time.Duration(rand.IntN(2)))),
 						CreatedBy: bidders.Username,
 						UpdatedBy: bidders.Username,
 						CreatedAt: func(t time.Time) *time.Time { return &t }(firstOfMonth.AddDate(0, 0, i+1+x)),
@@ -209,9 +213,11 @@ func BulProduct() {
 						}
 						if bidders.No < 49 {
 							var watch2 = models.Watchlist{
-								UserID:    users[bidders.No+1].ID,
-								ItemID:    product.ID,
-								Date:      func(t time.Time) *time.Time { return &t }(firstOfMonth.AddDate(0, 0, i+1+x)),
+								UserID: users[bidders.No+1].ID,
+								ItemID: product.ID,
+								Date: func(t time.Time) *time.Time { return &t }(firstOfMonth.AddDate(0, 0, i+1+x).Add(time.Hour*time.Duration(rand.IntN(2)) +
+									time.Minute*time.Duration(rand.IntN(2)) +
+									time.Second*time.Duration(rand.IntN(2)))),
 								CreatedBy: bidders.Username,
 								UpdatedBy: bidders.Username,
 								CreatedAt: func(t time.Time) *time.Time { return &t }(firstOfMonth.AddDate(0, 0, i+1+x)),

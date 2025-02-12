@@ -532,7 +532,7 @@ templ TabBid(page int, size int, count int64, bids []models.Bid) {
                                     hx-swap="innerHtml"
                                     hx-trigger="click"
                                     hx-indicator=".htmx-loader">
-                                    @components.AddRemoveWatchlist(bid.Watchlist.ID)
+                                    @components.AddRemoveWatchlist(bid.Watchlist.ID, true)
                                     // if bid.Watchlist.ID != "" {
                                     //     <a href="#" class="btn-product-icon btn-wishlist" title="Remove from wishlist" 
                                     //         style="border-color:#df4625;background-color:#df4625;color:#ffffff">
@@ -686,7 +686,7 @@ templ TabWatch(page int, size int, count int64, watchs []models.Watchlist) {
                                     hx-swap="innerHtml"
                                     hx-trigger="click"
                                     hx-indicator=".htmx-loader">
-                                    @components.AddRemoveWatchlist(watch.ID)
+                                    @components.AddRemoveWatchlist(watch.ID, true)
                                     // if bid.Watchlist.ID != "" {
                                     //     <a href="#" class="btn-product-icon btn-wishlist" title="Remove from wishlist" 
                                     //         style="border-color:#df4625;background-color:#df4625;color:#ffffff">
@@ -728,7 +728,7 @@ templ TabWatch(page int, size int, count int64, watchs []models.Watchlist) {
                                 <div class="entry-cats">
                                     in <a href="#">{watch.Item.Category.Name}</a>
                                     <span class="meta-separator">|</span>
-                                    <a href="#">{watch.Item.Currency.Code} {fmt.Sprintf("%.2f", watch.Item.OpenBid)} </a>
+                                    <a href="#">{watch.Item.Currency.Code}{fmt.Sprintf("%.2f", watch.Item.OpenBid)} </a>
                                 </div><!-- End .entry-cats -->
 
                                 <div class="entry-content">
