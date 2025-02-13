@@ -13,6 +13,7 @@ type Bid struct {
 	Date      *time.Time `gorm:"column:date;type:TIMESTAMP NULL;" json:"date,omitempty" form:"date"`
 	Message   string     `gorm:"column:message" json:"message,omitempty" form:"message"`
 	Watchlist Watchlist  `gorm:"foreignKey:ItemID;references:ItemID" json:"watchlist,omitempty"`
+	Cart      *Cart      `gorm:"foreignKey:BidID;references:ID" json:"Cart,omitempty"`
 	CreatedAt *time.Time `gorm:"column:created_at;type:TIMESTAMP NULL;default:null" json:"created_at,omitempty" form:"created_at"`
 	CreatedBy string     `gorm:"column:created_by" json:"created_by,omitempty" form:"created_by"`
 	UpdatedAt *time.Time `gorm:"column:updated_at;type:TIMESTAMP NULL;default:null" json:"updated_at,omitempty" form:"updated_at"`

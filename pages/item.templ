@@ -167,12 +167,13 @@ templ Item(item models.Item, token dto.Token, isLoggedIn bool) {
                                                 <span>Bid Now</span>
                                             </a>
                                         
-                                            <div id={item.ID} class="details-action-wrapper"
+                                            <div id={fmt.Sprintf("item_%v",item.No)} class="details-action-wrapper"
                                                 if isLoggedIn {
                                                     hx-get={fmt.Sprintf("/add-remove-watchlist/?item_id=%s",item.ID)}             
                                                     hx-swap="innerHtml"
                                                     hx-trigger="click"
                                                     hx-indicator=".htmx-loader"
+                                                    hx-target={fmt.Sprintf("#item_%v",item.No)}
                                                 }
                                             >
                                                 if len(item.Watchlists) > 0 {

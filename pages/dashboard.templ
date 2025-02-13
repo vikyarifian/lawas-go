@@ -89,12 +89,12 @@ templ Dashboard(token dto.Token, isLoggedIn bool) {
 
                                 <div class="tab-pane fade" id="tab-sells" role="tabpanel" aria-labelledby="tab-sells-link">
                                     <p>No sells has been made yet.</p>
-                                    <a href="/sell" class="btn btn-outline-primary-2"><span>GO SELL</span><i class="icon-long-arrow-right"></i></a>
+                                    <a href="#sell-modal" data-toggle="modal" class="btn btn-outline-primary-2"><span>GO SELL</span><i class="icon-long-arrow-right"></i></a>
                                 </div><!-- .End .tab-pane -->
 
                                 <div class="tab-pane fade" id="tab-bids" role="tabpanel" aria-labelledby="tab-bids-link">
                                     <p>No bid has been made yet.</p>
-                                    <a href="/bid" class="btn btn-outline-primary-2"><span>GO BID</span><i class="icon-long-arrow-right"></i></a>
+                                    <a href="/market" class="btn btn-outline-primary-2"><span>GO BID</span><i class="icon-long-arrow-right"></i></a>
                                 </div><!-- .End .tab-pane -->
 
                                 <div class="tab-pane fade" id="tab-watchs" role="tabpanel" aria-labelledby="tab-watchs-link">
@@ -364,7 +364,7 @@ templ EditAddress(tipe string, address models.Address) {
 templ TabSell(page int, size int, count int64, sells []models.Item) {
     if len(sells) == 0 {
         <p>No offer has been made yet.</p>
-        <a href="/sell" class="btn btn-outline-primary-2"><span>GO SELL</span><i class="icon-long-arrow-right"></i></a>
+        <a href="#sell-modal" data-toggle="modal" class="btn btn-outline-primary-2"><span>GO SELL</span><i class="icon-long-arrow-right"></i></a>
     } else {
         // <div class="container">
             for _, sell := range sells {
@@ -506,7 +506,7 @@ templ TabSell(page int, size int, count int64, sells []models.Item) {
 templ TabBid(page int, size int, count int64, bids []models.Bid) {
     if len(bids) == 0 {
         <p>No bid has been made yet.</p>
-        <a href="/bid" class="btn btn-outline-primary-2"><span>GO BID</span><i class="icon-long-arrow-right"></i></a>
+        <a href="/market" class="btn btn-outline-primary-2"><span>GO BID</span><i class="icon-long-arrow-right"></i></a>
     } else {
         // <div class="container">
             for _, bid := range bids {
@@ -528,11 +528,12 @@ templ TabBid(page int, size int, count int64, bids []models.Bid) {
                                     <img src={bid.Item.Photo} alt={bid.Item.Name} class="product-image">
                                 </a>
                                 
-                                <div id={bid.Item.ID} class="product-action-vertical" style="top:0.4rem;right:0.2rem;"
+                                <div id={fmt.Sprintf("item_%v",bid.Item.No)} class="product-action-vertical" style="top:0.4rem;right:0.2rem;"
                                     hx-get={fmt.Sprintf("/add-remove-watchlist/?item_id=%s",bid.Item.ID)}             
                                     hx-swap="innerHtml"
                                     hx-trigger="click"
-                                    hx-indicator=".htmx-loader">
+                                    hx-indicator=".htmx-loader"
+                                    hx-target={fmt.Sprintf("#item_%v",bid.Item.No)}>
                                     @components.AddRemoveWatchlist(bid.Watchlist.ID, true)
                                     // if bid.Watchlist.ID != "" {
                                     //     <a href="#" class="btn-product-icon btn-wishlist" title="Remove from wishlist" 
@@ -661,7 +662,7 @@ templ TabBid(page int, size int, count int64, bids []models.Bid) {
 templ TabWatch(page int, size int, count int64, watchs []models.Watchlist) {
     if len(watchs) == 0 {
         <p>No watchlist has been made yet.</p>
-        <a href="/bid" class="btn btn-outline-primary-2"><span>Go To Market</span><i class="icon-long-arrow-right"></i></a>
+        <a href="/market" class="btn btn-outline-primary-2"><span>Go To Market</span><i class="icon-long-arrow-right"></i></a>
     } else {
         // <div class="container">
             for _, watch := range watchs {
@@ -683,11 +684,12 @@ templ TabWatch(page int, size int, count int64, watchs []models.Watchlist) {
                                     <img src={watch.Item.Photo} alt={watch.Item.Name} class="product-image">
                                 </a>
                                 
-                                <div id={watch.Item.ID} class="product-action-vertical" style="top:0.4rem;right:0.2rem;"
+                                <div id={fmt.Sprintf("item_%v",watch.Item.No)} class="product-action-vertical" style="top:0.4rem;right:0.2rem;"
                                     hx-get={fmt.Sprintf("/add-remove-watchlist/?item_id=%s",watch.Item.ID)}             
                                     hx-swap="innerHtml"
                                     hx-trigger="click"
-                                    hx-indicator=".htmx-loader">
+                                    hx-indicator=".htmx-loader"
+                                    hx-target={fmt.Sprintf("#item_%v",watch.Item.No)}>
                                     @components.AddRemoveWatchlist(watch.ID, true)
                                     // if bid.Watchlist.ID != "" {
                                     //     <a href="#" class="btn-product-icon btn-wishlist" title="Remove from wishlist" 

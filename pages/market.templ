@@ -163,16 +163,16 @@ templ ItemList(items []models.Item, page int, size int, sort string, count int64
                                     <span class="product-label label-circle label-top">Top</span>
                                 }
                                 <a href={templ.SafeURL(fmt.Sprintf("/item?id=%s", item.ID))}>
-                                    <img src={item.Photo} alt={item.Name} class="product-image" style="max-height:20rem">
+                                    <img src={item.Photo} alt={item.Name} class="product-image" style="max-height:20rem;min-height:20rem">
                                 </a>
 
-                                <div id={item.ID} class="product-action-vertical"
+                                <div id={fmt.Sprintf("item_%v",item.No)} class="product-action-vertical"
                                     if isLoggedIn {
                                         hx-get={fmt.Sprintf("/add-remove-watchlist/?item_id=%s",item.ID)}             
                                         hx-swap="innerHtml"
                                         hx-trigger="click"
                                         hx-indicator=".htmx-loader"
-                                        hx-target={fmt.Sprintf("#%s",item.ID)}             
+                                        hx-target={fmt.Sprintf("#item_%v",item.No)}            
                                     }
                                 >
                                     if len(item.Watchlists) > 0 {
