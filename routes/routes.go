@@ -11,6 +11,7 @@ import (
 	"lawas-go/utils"
 	"log"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -154,6 +155,123 @@ func WebRoutes(app *fiber.App) {
 
 	app.Get("/dashboard", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
 		return utils.Render(c, pages.Dashboard(auth.IsAuthenticated(c)))
+	})
+
+	app.Get("/sell", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		var categories []models.Category
+		var currencies []models.Currency
+		var token dto.Token
+		db.MySql.Find(&categories)
+		db.MySql.Find(&currencies)
+		token, _ = auth.IsAuthenticated(c)
+		return utils.Render(c, components.HtmlSell(token, categories, currencies))
+	})
+
+	app.Post("/bid", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		var token dto.Token
+		var bid models.Bid
+		var item models.Item
+
+		token, _ = auth.IsAuthenticated(c)
+		if err := c.BodyParser(&bid); err != nil {
+			log.Println(err.Error())
+			return utils.Render(c, components.ErrorAlert(err.Error(), "sell"), templ.WithStatus(http.StatusBadRequest))
+		}
+		if err := db.MySql.Where("id=?", bid.ItemID).First(&item).Error; err != nil {
+			return utils.Render(c, components.ErrorAlert("Item not found!", "bid"), templ.WithStatus(http.StatusBadRequest))
+		}
+
+		newBid := models.Bid{
+			ItemID:    bid.ItemID,
+			UserID:    token.UserID,
+			Bid:       bid.Bid,
+			Date:      func(t time.Time) *time.Time { return &t }(time.Now()),
+			CreatedBy: token.Username,
+			UpdatedBy: token.Username,
+		}
+
+		if err := db.MySql.Save(&newBid).Error; err != nil {
+			log.Println(err.Error())
+			return utils.Render(c, components.ErrorAlert(err.Error(), "bid"), templ.WithStatus(http.StatusBadRequest))
+		}
+
+		time.Sleep(100 * time.Millisecond)
+		c.Response().Header.Set("HX-Redirect", "/item?id="+item.ID)
+		return utils.Render(c, components.SuccessAlert("Success!", "bid"), templ.WithStatus(http.StatusOK))
+
+	})
+
+	app.Get("/collection", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		var token dto.Token
+		var bids []models.Bid
+		token, _ = auth.IsAuthenticated(c)
+		db.MySql.Where("user_id=?", token.UserID).Preload("Item", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Category").Preload("Bids", func(db *gorm.DB) *gorm.DB {
+				return db.Order("bid desc")
+			}).Preload("User").Preload("Currency")
+		}).Preload("Watchlist", func(db *gorm.DB) *gorm.DB {
+			return db.Where("user_id=?", token.UserID)
+		}).Find(&bids)
+
+		return utils.Render(c, pages.Collection(bids, token, token.IsAuth))
+	})
+
+	app.Post("/sell", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		var token dto.Token
+		var item models.Item
+		token, _ = auth.IsAuthenticated(c)
+		if err := c.BodyParser(&item); err != nil {
+			log.Println(err.Error())
+			return utils.Render(c, components.ErrorAlert(err.Error(), "sell"), templ.WithStatus(http.StatusBadRequest))
+		}
+		file, err := c.FormFile("photo")
+		if err != nil {
+			return utils.Render(c, components.ErrorAlert(err.Error(), "sell"), templ.WithStatus(http.StatusBadRequest))
+		}
+
+		maxId := db.MySql.Table("items").Select("max(no)").Row()
+		_ = maxId.Scan(&item.No)
+
+		idhash := utils.GetMD5Hash(strconv.Itoa(item.No + 1))
+		ext := strings.Split(file.Filename, ".")
+		file.Filename = idhash + "." + ext[len(ext)-1]
+
+		destination := "assets/images/products/"
+		if err := c.SaveFile(file, destination+file.Filename); err != nil {
+			return utils.Render(c, components.ErrorAlert(err.Error(), "sell"), templ.WithStatus(http.StatusBadRequest))
+		}
+		re := regexp.MustCompile("\\n")
+		item.Description = re.ReplaceAllString(item.Description, "<br>")
+		fmt.Println("Desc: " + item.Description)
+
+		newItem := models.Item{
+			No:          item.No + 1,
+			ID:          idhash,
+			UserID:      token.UserID,
+			Name:        item.Name,
+			Description: item.Description,
+			CategoryID:  item.CategoryID,
+			Brand:       item.Brand,
+			Condition:   item.Condition,
+			Duration:    item.Duration,
+			CurrencyID:  item.CurrencyID,
+			OpenBid:     item.OpenBid,
+			Photo:       destination + file.Filename,
+			CreatedBy:   token.Username,
+			UpdatedBy:   token.Username,
+		}
+		print(item.CategoryID + " " + item.CurrencyID)
+		// db.MySql.First(&newItem.Category)
+		// db.MySql.First(&newItem.Currency)
+
+		if err := db.MySql.Save(&newItem).Error; err != nil {
+			log.Println(err.Error())
+			return utils.Render(c, components.ErrorAlert(err.Error(), "sell"), templ.WithStatus(http.StatusBadRequest))
+		}
+
+		time.Sleep(500 * time.Millisecond)
+		c.Response().Header.Set("HX-Redirect", "/item?id="+newItem.ID)
+		return utils.Render(c, components.SuccessAlert("Success!", "sell"), templ.WithStatus(http.StatusOK))
 	})
 
 	app.Get("/add-remove-watchlist", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {

@@ -1,8 +1,6 @@
 package main
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,6 +9,7 @@ import (
 	"lawas-go/db"
 	"lawas-go/models"
 	"lawas-go/routes"
+	"lawas-go/utils"
 	"log"
 	"math/rand/v2"
 	"net"
@@ -54,11 +53,6 @@ func main() {
 
 }
 
-func GetMD5Hash(text string) string {
-	hash := md5.Sum([]byte(text))
-	return hex.EncodeToString(hash[:])
-}
-
 func BulProduct() {
 	var res BulkProductResponse
 	httpClient := http.Client{}
@@ -100,7 +94,7 @@ func BulProduct() {
 	for i, p := range res.Products {
 		if i <= 60 {
 			if p.Category != "groceries" && p.Category != "skin-care" && p.Category != "beauty" && p.Category != "womens-jewellery" {
-				idhash := GetMD5Hash(strconv.Itoa(p.ID))
+				idhash := utils.GetMD5Hash(strconv.Itoa(p.ID))
 				cate := p.Category
 				switch {
 				case p.Category == "fragrances":
@@ -176,7 +170,7 @@ func BulProduct() {
 				for x := 0; x <= duration[n2]+duration[0]; x++ {
 					var bidders models.User
 					db.MySql.Where("no=?", rand.IntN(50)).First(&bidders)
-					bidhash := GetMD5Hash(strconv.Itoa(bNo))
+					bidhash := utils.GetMD5Hash(strconv.Itoa(bNo))
 					var bid = models.Bid{
 						No:     bNo,
 						ID:     bidhash,
@@ -266,7 +260,7 @@ func BulkUser() {
 	for _, user := range res.Users {
 		if user.ID >= 3 && user.ID <= 50 {
 			hash, _ := auth.HashPassword(user.Password)
-			idhash := GetMD5Hash(strconv.Itoa(user.ID))
+			idhash := utils.GetMD5Hash(strconv.Itoa(user.ID))
 			var u = models.User{
 				No:        user.ID,
 				ID:        idhash,

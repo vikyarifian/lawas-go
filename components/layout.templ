@@ -163,7 +163,7 @@ templ HtmlWrapper(token dto.Token, isLoggedIn bool, title string) {
 			.scoll-pane {
 				overflow: auto;
 				width: 40vw;
-				height: 32vh;
+				max-height: 32vh;
 				background: hsl(0, 0%, 100%);
 				padding: 1rem;
 				border-radius: 0.5rem;
@@ -200,7 +200,6 @@ templ HtmlWrapper(token dto.Token, isLoggedIn bool, title string) {
                 </main><!-- End .main -->
                 
                 @HtmlFooter()
-
 
                 <!-- Mobile Menu -->
                 <div class="mobile-menu-overlay"></div><!-- End .mobil-menu-overlay -->
@@ -252,7 +251,13 @@ templ HtmlWrapper(token dto.Token, isLoggedIn bool, title string) {
                 </div><!-- End .mobile-menu-container -->
 
                 if isLoggedIn {
-                    <div></div>
+					<div id="sell-popup"					
+						hx-get="/sell"               
+						hx-swap="innerHtml"
+						hx-target="#sell-popup"
+						hx-indicator=".htmx-loader"
+						hx-trigger="load"						
+					></div>
                 } else {
                     @HtmlSignup()
                 }

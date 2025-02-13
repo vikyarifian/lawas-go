@@ -75,7 +75,11 @@ templ Item(item models.Item, token dto.Token, isLoggedIn bool) {
                                 </div><!-- End .product-price -->
 
                                 <div class="product-content">
-                                    <p>{item.Description} </p>
+                                    for _,text := range strings.Split(item.Description,"<br>") {
+                                        if text != "" {
+                                            <p>{text} </p>
+                                        }
+                                    }                                    
                                 </div><!-- End .product-content -->
 
                                 // <div class="details-filter-row details-row-size">
@@ -151,7 +155,17 @@ templ Item(item models.Item, token dto.Token, isLoggedIn bool) {
                                         <a href="#" class="btn-product btn-danger" style="color: #df4625;"><span style="color: #fff;">Closed</span></a>
                                     } else {
                                         if item.UserID != token.UserID {
-                                            <a href="#" class="btn-product btn-cart"><span>Bid Now</span></a>
+                                            <a 
+                                                if isLoggedIn {
+                                                    href="#bid-modal" 
+                                                } else {
+                                                    href="#signin-modal" 
+                                                }     
+                                                data-toggle="modal"                                           
+                                                class="btn-product btn-cart"
+                                            >
+                                                <span>Bid Now</span>
+                                            </a>
                                         
                                             <div id={item.ID} class="details-action-wrapper"
                                                 if isLoggedIn {
@@ -192,10 +206,17 @@ templ Item(item models.Item, token dto.Token, isLoggedIn bool) {
                                                         <div class="comment-user" >
                                                             if i==0 {
                                                                 <h4 style="color: #39f;">
-                                                                    {strconv.Itoa(i+1)}. {item.Currency.Code}{fmt.Sprintf("%.2f", bid.Bid)} ({bid.User.Name[0:1]}{strings.Repeat("*", len(strings.Split(bid.User.Name," ")[0])-1)} 
-                                                                    if len(strings.Split(bid.User.Name," "))>1 {
-                                                                        {strings.Split(bid.User.Name," ")[1][0:1]}{strings.Repeat("*", len(strings.Split(bid.User.Name," ")[1])-1)}
-                                                                    })  &nbsp;
+                                                                    {strconv.Itoa(i+1)}. {item.Currency.Code}{fmt.Sprintf("%.2f", bid.Bid)} 
+                                                                    if strings.Trim(token.UserID," ") == strings.Trim(bid.User.ID," ") {
+                                                                        ({bid.User.Name})&nbsp;
+                                                                    } else {
+                                                                        ({bid.User.Name[0:1]}{strings.Repeat("*", len(strings.Split(bid.User.Name," ")[0])-1)} 
+                                                                        if len(strings.Split(bid.User.Name," "))>1 {
+                                                                            {strings.Split(bid.User.Name," ")[1][0:1]}{strings.Repeat("*", len(strings.Split(bid.User.Name," ")[1])-1)}
+                                                                        }
+                                                                        )&nbsp;
+                                                                    }
+                                                                    
                                                                     if item.Date.AddDate(0,0,item.Duration).Before(time.Now()) {
                                                                         
                                                                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" top="-1rem" width="25px" height="25px">
@@ -271,5 +292,8 @@ templ Item(item models.Item, token dto.Token, isLoggedIn bool) {
                 </div>
             </div>
         </div>
+        if isLoggedIn {
+            @components.HtmlBid(token, item)
+        }
     }
 }
