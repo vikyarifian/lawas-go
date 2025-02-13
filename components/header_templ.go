@@ -9,7 +9,10 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
+	"fmt"
 	"lawas-go/dto"
+	"lawas-go/models"
+	"strconv"
 	_ "strconv"
 )
 
@@ -46,13 +49,13 @@ func HtmlHeader(token dto.Token, isLoggedIn bool) templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(token.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/header.templ`, Line: 25, Col: 93}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/header.templ`, Line: 28, Col: 93}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a><div class=\"header-menu\"><ul><li><a href=\"/dashboard\">My Account</a></li><li><a href=\"/logout\">Logout</a></li></ul></div><!-- End .header-menu --></div></li>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</a><div class=\"header-menu\"><ul><li><a href=\"/dashboard\">My Account</a></li><li><a href=\"/collection\">Collection</a></li><li><a href=\"/offers\">Offers</a></li><li><a href=\"/logout\">Logout</a></li></ul></div><!-- End .header-menu --></div></li>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -77,7 +80,17 @@ func HtmlHeader(token dto.Token, isLoggedIn bool) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " data-toggle=\"modal\" title=\"Sell\"><div class=\"icon\"><i class=\"la la-money\"></i></div><p>Sell</p></a></div><!-- End .compare-dropdown --><div class=\"dropdown cart-dropdown\"><a href=\"#\" class=\"dropdown-toggle\" role=\"button\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\" data-display=\"static\"><div class=\"icon\"><i class=\"icon-shopping-cart\"></i> <span class=\"cart-count\">2</span></div><p>Cart</p></a><div class=\"dropdown-menu dropdown-menu-right\"><div class=\"dropdown-cart-products\"><div class=\"product\"><div class=\"product-cart-details\"><h4 class=\"product-title\"><a href=\"product.html\">Beige knitted elastic runner shoes</a></h4><span class=\"cart-product-info\"><span class=\"cart-product-qty\">1</span> x $84.00</span></div><!-- End .product-cart-details --><figure class=\"product-image-container\"><a href=\"product.html\" class=\"product-image\"><img src=\"/assets/images/products/cart/product-1.jpg\" alt=\"product\"></a></figure><a href=\"#\" class=\"btn-remove\" title=\"Remove Product\"><i class=\"icon-close\"></i></a></div><!-- End .product --><div class=\"product\"><div class=\"product-cart-details\"><h4 class=\"product-title\"><a href=\"product.html\">Blue utility pinafore denim dress</a></h4><span class=\"cart-product-info\"><span class=\"cart-product-qty\">1</span> x $76.00</span></div><!-- End .product-cart-details --><figure class=\"product-image-container\"><a href=\"product.html\" class=\"product-image\"><img src=\"/assets/images/products/cart/product-2.jpg\" alt=\"product\"></a></figure><a href=\"#\" class=\"btn-remove\" title=\"Remove Product\"><i class=\"icon-close\"></i></a></div><!-- End .product --></div><!-- End .cart-product --><div class=\"dropdown-cart-total\"><span>Total</span> <span class=\"cart-total-price\">$160.00</span></div><!-- End .dropdown-cart-total --><div class=\"dropdown-cart-action\"><a href=\"/collection\" class=\"btn btn-primary\">Collection</a> <a href=\"checkout.html\" class=\"btn btn-outline-primary-2\"><span>Checkout</span><i class=\"icon-long-arrow-right\"></i></a></div><!-- End .dropdown-cart-total --></div><!-- End .dropdown-menu --></div><!-- End .cart-dropdown --></div><!-- End .header-right --></div><!-- End .container --></div><!-- End .header-middle -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, " data-toggle=\"modal\" title=\"Sell\"><div class=\"icon\"><i class=\"la la-money\"></i></div><p>Sell</p></a></div><!-- End .compare-dropdown --><div class=\"dropdown cart-dropdown\" id=\"notif-cart\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if isLoggedIn {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, " hx-get=\"/notif-cart\" hx-swap=\"innerHtml\" hx-target=\"#notif-cart\" hx-indicator=\".htmx-loader\" hx-trigger=\"load\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "></div><!-- End .cart-dropdown --></div><!-- End .header-right --></div><!-- End .container --></div><!-- End .header-middle -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -85,7 +98,135 @@ func HtmlHeader(token dto.Token, isLoggedIn bool) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</header><!-- End .header -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</header><!-- End .header -->")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func NotifCart(carts []models.Cart, token dto.Token) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var3 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var3 == nil {
+			templ_7745c5c3_Var3 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<a href=\"#\" class=\"dropdown-toggle\" role=\"button\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\" data-display=\"static\"><div class=\"icon\"><i class=\"icon-shopping-cart\"></i> ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if len(carts) > 0 {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span class=\"cart-count\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var4 string
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(len(carts)))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/header.templ`, Line: 209, Col: 66}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</span>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div><p>Cart</p></a><div class=\"dropdown-menu dropdown-menu-right\"><div class=\"dropdown-cart-products\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for _, cart := range carts {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"product\"><div class=\"product-cart-details\"><h4 class=\"product-title\"><a href=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var5 templ.SafeURL = templ.SafeURL(fmt.Sprintf("/checkout?cart_id=%s", cart.ID))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var5)))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var6 string
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(cart.Bid.Item.Name)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/header.templ`, Line: 221, Col: 117}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</a></h4><span class=\"cart-product-info\"><span class=\"cart-product-qty\">1</span> x ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var7 string
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(cart.Bid.Item.Currency.Code)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/header.templ`, Line: 226, Col: 58}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var8 string
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", cart.Bid.Bid))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/header.templ`, Line: 226, Col: 93}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</span></div><!-- End .product-cart-details --><figure class=\"product-image-container\"><a href=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var9 templ.SafeURL = templ.SafeURL(fmt.Sprintf("/checkout?cart_id=%s", cart.ID))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var9)))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "\" class=\"product-image\"><img src=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var10 string
+			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(cart.Bid.Item.Photo)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/header.templ`, Line: 232, Col: 57}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "\" alt=\"product\"></a></figure></div><!-- End .product -->")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "</div><!-- End .cart-product --><br><div class=\"dropdown-cart-action\"><a href=\"/collection\" class=\"btn btn-primary\">Collection</a> <a href=\"/offers\" class=\"btn btn-outline-primary-2\"><span>Offers</span><i class=\"icon-long-arrow-right\"></i></a></div><!-- End .dropdown-cart-total --></div><!-- End .dropdown-menu -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

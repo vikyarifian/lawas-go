@@ -1,0 +1,145 @@
+package pages
+
+import (
+    "lawas-go/components"
+    "lawas-go/models"
+    "lawas-go/dto"
+
+    "fmt"
+)
+
+templ Checkout(cart models.Cart, address models.Address, token dto.Token, isLoggedIn bool) { 
+    if cart.BidID=="" || cart.Bid.UserID != token.UserID {
+        @NotFound(token, isLoggedIn)
+    } else {
+        @components.Layout(token, isLoggedIn, "Checkout") {
+            <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+                <div class="container">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                            <li class="breadcrumb-item"><a href="#">Collections</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+                    </ol>
+                </div><!-- End .container -->
+            </nav><!-- End .breadcrumb-nav -->
+            <div class="container">
+                <div class="page-header page-header-medium text-center" style="background-image: url('assets/images/backgrounds/cta/bg-7.jpg')">
+                    <h1 class="page-title text-white">Checkout<span class="text-white">Proceed to payment</span></h1>
+                </div><!-- End .page-header -->
+            </div><!-- End .container -->
+            <br>
+            <div class="page-content">
+                <div class="container">
+                    <form id="checkout-form"
+                        hx-disabled-elt="#checkout-button"
+                        hx-post="/checkout"               
+                        hx-swap="none"
+                        hx-on::before-request="document.getElementById('error_checkout').innerHTML = ''"
+                        hx-target-400="#error_checkout"
+                        hx-indicator=".htmx-loader" 
+                    >
+                        <input name="cart_id" hidden value={cart.ID}>
+                        <div class="row">
+                            <div class="col-lg-9">
+                                <h2 class="checkout-title">Shipping Details</h2><!-- End .checkout-title -->
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label>Name *</label>
+                                            <input type="text" class="form-control" name="ship_name" required value={address.ShipName}>
+                                        </div><!-- End .col-sm-6 -->
+
+                                    </div><!-- End .row -->
+
+                                    <label>Address *</label>
+                                    <input type="text" class="form-control" name="ship_address" required value={address.ShipAddress}>
+
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label>Town / City *</label>
+                                            <input type="text" class="form-control" name="ship_city" required value={address.ShipCity}>
+                                        </div><!-- End .col-sm-6 -->
+
+                                        <div class="col-sm-6">
+                                            <label>Country *</label>
+                                            <input type="text" class="form-control" name="ship_country" required value={address.ShipCountry}>
+                                        </div><!-- End .col-sm-6 -->
+                                    </div><!-- End .row -->
+
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label>Postcode / ZIP </label>
+                                            <input type="text" class="form-control" name="ship_postal_code" value={address.ShipPostalCode}>
+                                        </div><!-- End .col-sm-6 -->
+
+                                        <div class="col-sm-6">
+                                            <label>Phone *</label>
+                                            <input type="tel" class="form-control" name="ship_phone" required value={address.ShipPhone}>
+                                        </div><!-- End .col-sm-6 -->
+                                    </div><!-- End .row -->
+
+                                    <label>Order notes (optional)</label>
+                                    <textarea class="form-control" cols="30" rows="4" name="notes" placeholder="Notes about your order, e.g. special notes for delivery"></textarea>
+                            </div><!-- End .col-lg-9 -->
+                            <aside class="col-lg-3">
+                                <div class="summary">
+                                    <h3 class="summary-title">Your Order</h3><!-- End .summary-title -->
+
+                                    <table class="table table-summary">
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>Total</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <tr>
+                                                <td><a href="#">{cart.Bid.Item.Name}</a></td>
+                                                <td>{cart.Bid.Item.Currency.Code}{fmt.Sprintf("%.2f", cart.Bid.Bid)}</td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>Shipping:</td>
+                                                <td>Free shipping</td>
+                                            </tr>
+                                            <tr class="summary-total">
+                                                <td>Total:</td>
+                                                <td>{cart.Bid.Item.Currency.Code}{fmt.Sprintf("%.2f", cart.Bid.Bid)}</td>
+                                            </tr><!-- End .summary-total -->
+                                        </tbody>
+                                    </table><!-- End .table table-summary -->
+
+                                    <div class="accordion-summary" id="accordion-payment">
+                                        <div class="card">
+                                            <div class="card-header" id="heading-1">
+                                                <h2 class="card-title">
+                                                    <a role="button" data-toggle="collapse" href="#collapse-1" aria-expanded="true" aria-controls="collapse-1">
+                                                        Direct bank transfer
+                                                    </a>
+                                                </h2>
+                                            </div><!-- End .card-header -->
+                                            <div id="collapse-1" class="collapse show" aria-labelledby="heading-1" data-parent="#accordion-payment">
+                                                <div class="card-body">
+                                                    Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.
+                                                </div><!-- End .card-body -->
+                                            </div><!-- End .collapse -->
+                                        </div><!-- End .card -->
+
+                                    </div><!-- End .accordion -->
+                                    
+                                    <span id="error_checkout"></span>
+                                    <span id="success_checkout"></span>   
+
+                                    <button type="submit" class="btn btn-outline-primary-2 btn-order btn-block">
+                                        <span class="btn-text">Place Order</span>
+                                        <span class="btn-hover-text">Proceed to Payment</span>
+                                    </button>
+                                </div><!-- End .summary -->
+                            </aside><!-- End .col-lg-3 -->
+                        </div><!-- End .row -->
+                    </form>
+                </div>
+            </div>
+        }
+    }
+}

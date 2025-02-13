@@ -1,0 +1,55 @@
+package pages
+
+import (
+    "lawas-go/components"
+    "lawas-go/dto"
+    "lawas-go/models"
+
+    "fmt"
+)
+templ Payment(payment models.Payment, token dto.Token, isLoggedIn bool) {
+    if payment.Reff == "" || payment.Cart.Bid.UserID != token.UserID {
+        @NotFound(token, isLoggedIn)
+    } else {
+        @components.Layout(token, isLoggedIn, "Collections") {
+            <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+                <div class="container">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Payment</li>
+                    </ol>
+                </div><!-- End .container -->
+            </nav><!-- End .breadcrumb-nav -->
+            <div class="container">
+                <div class="page-header page-header-medium text-center" style="background-image: url('assets/images/backgrounds/cta/bg-7.jpg')">
+                    <h1 class="page-title text-white">Payment<span class="text-white"></span></h1>
+                </div><!-- End .page-header -->
+            </div><!-- End .container -->
+            <br>
+            <div class="page-content">
+                <div class="error-content text-center" style={fmt.Sprintf("background-image: url('%s')", payment.Cart.Bid.Item.Photo)}>
+                    <div class="container text-center">
+                        // <br>
+                        <h3>Order ID : {payment.Reff}</h3>
+                        // <br>
+                        // <br>
+                        // <figure class="product-media text-center col-md-2">
+                        //     <a href="#" style="width: 20rem; height: 20rem;">
+                        //         <img src={payment.Cart.Bid.Item.Photo} alt={payment.Cart.Bid.Item.Name} class="product-image">
+                        //     </a>
+                        // </figure>
+                        <br>
+                        <h4>{payment.Cart.Bid.Item.Name}</h4>
+                        <h5>{payment.Cart.Bid.Item.Currency.Code}{fmt.Sprintf("%.2f", payment.Cart.Bid.Bid)}</h5>
+                        <br>
+                        <h1 class="error-title">Transfer to 1312 4324</h1>
+                        <p></p>
+                        <br>
+                        <br>
+                        <span>Thanks</span>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}

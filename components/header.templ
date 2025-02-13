@@ -2,7 +2,10 @@ package components
 
 import (
     "lawas-go/dto"
+    "lawas-go/models"
     _"strconv"
+	"fmt"
+	"strconv"
 )
 
 templ HtmlHeader(token dto.Token, isLoggedIn bool) {
@@ -26,7 +29,8 @@ templ HtmlHeader(token dto.Token, isLoggedIn bool) {
                                             <div class="header-menu">
                                                 <ul>
                                                     <li><a href="/dashboard">My Account</a></li>
-                                                    // <li><a href="#">Setting</a></li>
+                                                    <li><a href="/collection">Collection</a></li>
+                                                    <li><a href="/offers">Offers</a></li>
                                                     <li><a href="/logout">Logout</a></li>
                                                 </ul>
                                             </div><!-- End .header-menu -->
@@ -178,69 +182,16 @@ templ HtmlHeader(token dto.Token, isLoggedIn bool) {
                     //     </a>
                     // </div><!-- End .compare-dropdown -->
 
-                    <div class="dropdown cart-dropdown">
-                        <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
-                            <div class="icon">
-                                <i class="icon-shopping-cart"></i>
-                                <span class="cart-count">2</span>
-                            </div>
-                            <p>Cart</p>
-                        </a>
-
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <div class="dropdown-cart-products">
-                                <div class="product">
-                                    <div class="product-cart-details">
-                                        <h4 class="product-title">
-                                            <a href="product.html">Beige knitted elastic runner shoes</a>
-                                        </h4>
-
-                                        <span class="cart-product-info">
-                                            <span class="cart-product-qty">1</span>
-                                            x $84.00
-                                        </span>
-                                    </div><!-- End .product-cart-details -->
-
-                                    <figure class="product-image-container">
-                                        <a href="product.html" class="product-image">
-                                            <img src="/assets/images/products/cart/product-1.jpg" alt="product">
-                                        </a>
-                                    </figure>
-                                    <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                </div><!-- End .product -->
-
-                                <div class="product">
-                                    <div class="product-cart-details">
-                                        <h4 class="product-title">
-                                            <a href="product.html">Blue utility pinafore denim dress</a>
-                                        </h4>
-
-                                        <span class="cart-product-info">
-                                            <span class="cart-product-qty">1</span>
-                                            x $76.00
-                                        </span>
-                                    </div><!-- End .product-cart-details -->
-
-                                    <figure class="product-image-container">
-                                        <a href="product.html" class="product-image">
-                                            <img src="/assets/images/products/cart/product-2.jpg" alt="product">
-                                        </a>
-                                    </figure>
-                                    <a href="#" class="btn-remove" title="Remove Product"><i class="icon-close"></i></a>
-                                </div><!-- End .product -->
-                            </div><!-- End .cart-product -->
-
-                            <div class="dropdown-cart-total">
-                                <span>Total</span>
-
-                                <span class="cart-total-price">$160.00</span>
-                            </div><!-- End .dropdown-cart-total -->
-
-                            <div class="dropdown-cart-action">
-                                <a href="/collection" class="btn btn-primary">Collection</a>
-                                <a href="checkout.html" class="btn btn-outline-primary-2"><span>Checkout</span><i class="icon-long-arrow-right"></i></a>
-                            </div><!-- End .dropdown-cart-total -->
-                        </div><!-- End .dropdown-menu -->
+                    <div class="dropdown cart-dropdown" id="notif-cart"
+                        if isLoggedIn {
+                            hx-get="/notif-cart"               
+                            hx-swap="innerHtml"
+                            hx-target="#notif-cart"
+                            hx-indicator=".htmx-loader"
+                            hx-trigger="load"
+                        }
+                    >
+                        
                     </div><!-- End .cart-dropdown -->
                 </div><!-- End .header-right -->
             </div><!-- End .container -->
@@ -249,3 +200,47 @@ templ HtmlHeader(token dto.Token, isLoggedIn bool) {
         @HtmlMenu()
     </header><!-- End .header -->
 }
+
+templ NotifCart(carts []models.Cart, token dto.Token) {
+    <a href="#" class="dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-display="static">
+        <div class="icon">
+            <i class="icon-shopping-cart"></i>
+            if len(carts) > 0 {
+                <span class="cart-count">{strconv.Itoa(len(carts))}</span>
+            }
+        </div>
+        <p>Cart</p>
+    </a>
+
+    <div class="dropdown-menu dropdown-menu-right">
+        <div class="dropdown-cart-products">
+            for _,cart := range carts {
+                <div class="product">
+                    <div class="product-cart-details">
+                        <h4 class="product-title">
+                            <a href={templ.SafeURL(fmt.Sprintf("/checkout?cart_id=%s", cart.ID))}>{cart.Bid.Item.Name}</a>
+                        </h4>
+
+                        <span class="cart-product-info">
+                            <span class="cart-product-qty">1</span>
+                            x {cart.Bid.Item.Currency.Code}{fmt.Sprintf("%.2f", cart.Bid.Bid)}
+                        </span>
+                    </div><!-- End .product-cart-details -->
+
+                    <figure class="product-image-container">
+                        <a href={templ.SafeURL(fmt.Sprintf("/checkout?cart_id=%s", cart.ID))} class="product-image">
+                            <img src={cart.Bid.Item.Photo} alt="product">
+                        </a>
+                    </figure>
+                </div><!-- End .product -->
+            }
+        </div><!-- End .cart-product -->
+        <br>
+        <div class="dropdown-cart-action">
+            <a href="/collection" class="btn btn-primary">Collection</a>
+            <a href="/offers" class="btn btn-outline-primary-2"><span>Offers</span><i class="icon-long-arrow-right"></i></a>
+        </div><!-- End .dropdown-cart-total -->
+    </div><!-- End .dropdown-menu -->
+    
+}
+    

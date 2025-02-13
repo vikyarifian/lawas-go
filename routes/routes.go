@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"lawas-go/auth"
 	"lawas-go/components"
@@ -207,14 +209,193 @@ func WebRoutes(app *fiber.App) {
 		token, _ = auth.IsAuthenticated(c)
 		db.MySql.Where("user_id=?", token.UserID).Preload("Item", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("Category").Preload("Bids", func(db *gorm.DB) *gorm.DB {
-				return db.Order("bid desc")
+				return db.Order("bid desc").Preload("User")
 			}).Preload("User").Preload("Currency")
 		}).Preload("Watchlist", func(db *gorm.DB) *gorm.DB {
 			return db.Where("user_id=?", token.UserID)
-		}).Find(&bids)
+		}).Preload("Cart", func(db *gorm.DB) *gorm.DB { return db.Preload("Payment") }).Find(&bids)
 
 		return utils.Render(c, pages.Collection(bids, token, token.IsAuth))
 	})
+
+	app.Get("/offers", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		var token dto.Token
+		var items []models.Item
+		token, _ = auth.IsAuthenticated(c)
+		db.MySql.Where("user_id=?", token.UserID).Preload("Category").Preload("Bids", func(db *gorm.DB) *gorm.DB {
+			return db.Order("bid desc").Preload("User").Preload("Cart", func(db *gorm.DB) *gorm.DB { return db.Preload("Payment") })
+		}).Preload("User").Preload("Currency").Find(&items)
+		for i, item := range items {
+			if len(item.Bids) == 0 {
+				items[i].Bids = append(items[i].Bids, models.Bid{
+					Bid: 0,
+				})
+			}
+		}
+		return utils.Render(c, pages.Offers(items, token, token.IsAuth))
+
+	})
+
+	app.Get("/notif-cart", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		var token dto.Token
+		var carts []models.Cart
+		token, _ = auth.IsAuthenticated(c)
+
+		db.MySql.Table("carts").Select("carts.*", "bids.user_id").Joins("LEFT JOIN bids ON bids.id COLLATE utf8mb4_unicode_ci = carts.bid_id").
+			Where("bids.user_id=? and carts.id not in (select cart_id from db_lawas.payments) ", token.UserID).Preload("Bid", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Item", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("Currency")
+			})
+		}).Find(&carts)
+		return utils.Render(c, components.NotifCart(carts, token))
+	})
+
+	app.Post("/checkout", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		var token dto.Token
+		var payment models.Payment
+		token, _ = auth.IsAuthenticated(c)
+		if err := c.BodyParser(&payment); err != nil {
+			log.Println(err.Error())
+			return utils.Render(c, components.ErrorAlert(err.Error(), "checkout"), templ.WithStatus(http.StatusBadRequest))
+		}
+
+		b := make([]byte, 5)
+		rand.Read(b)
+		reff := base64.StdEncoding.EncodeToString(b)
+
+		maxId := db.MySql.Table("payments").Select("max(no)").Row()
+		_ = maxId.Scan(&payment.No)
+
+		idhash := utils.GetMD5Hash(strconv.Itoa(payment.No + 1))
+
+		newPayment := models.Payment{
+			No:             payment.No + 1,
+			ID:             idhash,
+			Reff:           reff,
+			CartID:         payment.CartID,
+			ShipName:       payment.ShipName,
+			ShipAddress:    payment.ShipAddress,
+			ShipCity:       payment.ShipCity,
+			ShipCountry:    payment.ShipCountry,
+			ShipPostalCode: payment.ShipPostalCode,
+			ShipPhone:      payment.ShipPhone,
+			Notes:          payment.Notes,
+			Status:         "O",
+			CreatedBy:      token.Username,
+			UpdatedBy:      token.Username,
+		}
+
+		if err := db.MySql.Save(&newPayment).Error; err != nil {
+			return utils.Render(c, components.ErrorAlert(err.Error(), "checkout"), templ.WithStatus(http.StatusBadRequest))
+		}
+
+		c.Response().Header.Set("HX-Redirect", "/payment?id="+newPayment.ID)
+		return utils.Render(c, components.SuccessAlert("Success!", "checkout"), templ.WithStatus(http.StatusBadRequest))
+
+	})
+
+	app.Get("/payment", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		var token dto.Token
+		var payment models.Payment
+		id := c.Query("id")
+		token, _ = auth.IsAuthenticated(c)
+		if err := db.MySql.Where("id=? and status='O'", id).Preload("Cart", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Bid", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("Item", func(db *gorm.DB) *gorm.DB { return db.Preload("Currency") })
+			})
+		}).First(&payment).Error; err != nil {
+			c.Response().Header.Set("HX-Redirect", "/404")
+		}
+
+		return utils.Render(c, pages.Payment(payment, token, token.IsAuth))
+	})
+
+	app.Get("checkout", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		cartID := c.Query("cart_id")
+		var token dto.Token
+		var cart models.Cart
+		token, _ = auth.IsAuthenticated(c)
+		if err := db.MySql.Where("id=? and id not in (select cart_id from db_lawas.payments)", cartID).Preload("Bid", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Item", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("Currency")
+			}).Preload("User", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("Address")
+			})
+		}).First(&cart).Error; err != nil {
+			c.Response().Header.Set("HX-Redirect", "/404")
+		}
+		if token.UserID != cart.Bid.UserID {
+			c.Response().Header.Set("HX-Redirect", "/401")
+		}
+		if cart.BidID == "" {
+			c.Response().Header.Set("HX-Redirect", "/404")
+		}
+		if cart.Bid.User.Address.ID == "" {
+			cart.Bid.User.Address = models.Address{}
+		}
+		return utils.Render(c, pages.Checkout(cart, cart.Bid.User.Address, token, token.IsAuth))
+
+	})
+
+	app.Get("/approve-bid", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		var token dto.Token
+		var bids []models.Bid
+		bidNo := c.Query("bid_no")
+		bidID := c.Query("bid_id")
+		userID := c.Query("user_id")
+		itemID := c.Query("item_id")
+		token, _ = auth.IsAuthenticated(c)
+		if userID == token.UserID {
+			return utils.Render(c, components.ErrorAlert("Approve failed!", "approve_bid_"+bidNo), templ.WithStatus(http.StatusBadRequest))
+		}
+		db.MySql.Where("item_id=?", itemID).Order("bid desc").Find(&bids)
+		if bidID != bids[0].ID {
+			fmt.Println(bids[0].ID)
+			return utils.Render(c, components.ErrorAlert("Approve failed!", "approve_bid_"+bidNo), templ.WithStatus(http.StatusBadRequest))
+		}
+		cart := models.Cart{
+			BidID:     bidID,
+			Status:    "O",
+			CreatedBy: token.Username,
+			UpdatedBy: token.Username,
+		}
+		if err := db.MySql.Save(&cart).Error; err != nil {
+			fmt.Println(err.Error())
+			return utils.Render(c, components.ErrorAlert("Approve failed!", "approve_bid_"+bidNo), templ.WithStatus(http.StatusBadRequest))
+		}
+		c.Response().Header.Set("HX-Redirect", "/offers")
+		return utils.Render(c, components.SuccessAlert("Success!", "approve_bid_"+bidNo), templ.WithStatus(http.StatusOK))
+	})
+
+	// app.Get("/approve-payment", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+	// 	var token dto.Token
+	// 	var payment models.Payment
+	// 	payNo := c.Query("pay_no")
+	// 	payID := c.Query("pay_id")
+	// 	userID := c.Query("user_id")
+	// 	itemID := c.Query("item_id")
+	// 	token, _ = auth.IsAuthenticated(c)
+	// 	if userID == token.UserID {
+	// 		return utils.Render(c, components.ErrorAlert("Approve failed!", "approve_bid_"+payNo), templ.WithStatus(http.StatusBadRequest))
+	// 	}
+	// 	db.MySql.Where("id=?", payID).First(&payment)
+	// 	if bidID != bids[0].ID {
+	// 		fmt.Println(bids[0].ID)
+	// 		return utils.Render(c, components.ErrorAlert("Approve failed!", "approve_bid_"+bidNo), templ.WithStatus(http.StatusBadRequest))
+	// 	}
+	// 	cart := models.Cart{
+	// 		BidID:     bidID,
+	// 		Status:    "O",
+	// 		CreatedBy: token.Username,
+	// 		UpdatedBy: token.Username,
+	// 	}
+	// 	if err := db.MySql.Save(&cart).Error; err != nil {
+	// 		fmt.Println(err.Error())
+	// 		return utils.Render(c, components.ErrorAlert("Approve failed!", "approve_bid_"+bidNo), templ.WithStatus(http.StatusBadRequest))
+	// 	}
+	// 	c.Response().Header.Set("HX-Redirect", "/offers")
+	// 	return utils.Render(c, components.SuccessAlert("Success!", "approve_bid_"+bidNo), templ.WithStatus(http.StatusOK))
+	// })
 
 	app.Post("/sell", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
 		var token dto.Token
@@ -257,6 +438,7 @@ func WebRoutes(app *fiber.App) {
 			CurrencyID:  item.CurrencyID,
 			OpenBid:     item.OpenBid,
 			Photo:       destination + file.Filename,
+			Date:        func(t time.Time) *time.Time { return &t }(time.Now()),
 			CreatedBy:   token.Username,
 			UpdatedBy:   token.Username,
 		}
