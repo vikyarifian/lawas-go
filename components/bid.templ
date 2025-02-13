@@ -1,0 +1,83 @@
+package components
+
+import (
+    "lawas-go/dto"
+	"lawas-go/models"
+    "fmt"
+)
+
+templ HtmlBid(token dto.Token, item models.Item) {
+    if token.IsAuth {
+        <div class="modal fade" id="bid-modal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true"><i class="icon-close"></i></span>
+                        </button>
+
+                        <div class="form-box">
+                            <div class="form-tab">
+                                <ul class="nav nav-pills nav-fill nav-border-anim" role="tablist">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" id="bid-tab" data-toggle="tab" href="#bid" role="tab" aria-controls="bid" aria-selected="true">Start Bid</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content" id="tab-content-5">
+                                    <div class="tab-pane fade show active" id="bid" role="tabpanel" aria-labelledby="bid-tab">
+                                        <form id="bid-form" enctype="multipart/form-data"
+                                            hx-disabled-elt="#bid-button"
+                                            hx-post="/bid"               
+                                            hx-swap="none"
+                                            hx-on::before-request="document.getElementById('error_bid').innerHTML = ''"
+                                            hx-target-400="#error_bid"
+                                            hx-indicator=".htmx-loader"
+                                        >
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="item_id" name="item_id" required hidden value={item.ID}>
+                                                <label for="bid-name"><h4>{item.Name}</h4></label>
+                                            </div><!-- End .form-group -->
+
+                                            <div class="form-group">
+                                                 <figure class="comment-media">
+                                                    <a href="#">
+                                                        <img src={item.Photo} alt={item.Name}>
+                                                    </a>
+                                                </figure>
+                                            </div><!-- End .form-group -->
+
+                                            <div class="form-group">
+                                                <label for="bid-category">
+                                                if len(item.Bids) > 0 {
+                                                    Highest bid : {item.Currency.Code}{fmt.Sprintf("%.2f", item.Bids[0].Bid)}
+                                                } else {
+                                                    Open bid : {item.Currency.Code}{fmt.Sprintf("%.2f", item.OpenBid)}
+                                                }
+                                                </label>
+                                            </div><!-- End .form-group -->
+
+                                            <div class="form-group">
+                                                <label for="bid-bid">Your Bid *</label>
+                                                <input type="number" class="form-control" id="bid" name="bid" required>
+                                            </div><!-- End .form-group -->                                          
+
+                                            <span id="error_bid"></span>
+                                            <span id="success_bid"></span>    
+
+                                            <div class="form-footer">
+                                                <button id="bid-button" type="submit" class="btn btn-outline-primary-2">
+                                                    <span>BID</span>
+                                                    <i class="icon-long-arrow-right"></i>
+                                                </button>
+                                            </div><!-- End .form-footer -->
+                                        </form>
+                                    </div><!-- .End .tab-pane -->                                
+                                </div><!-- End .tab-content -->
+                            </div><!-- End .form-tab -->
+                        </div><!-- End .form-box -->
+                    </div><!-- End .modal-body -->
+                </div><!-- End .modal-content -->
+            </div><!-- End .modal-dialog -->
+        </div><!-- End .modal -->
+    }
+}

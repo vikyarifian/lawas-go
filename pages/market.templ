@@ -166,12 +166,13 @@ templ ItemList(items []models.Item, page int, size int, sort string, count int64
                                     <img src={item.Photo} alt={item.Name} class="product-image" style="max-height:20rem">
                                 </a>
 
-                                <div class="product-action-vertical"
+                                <div id={item.ID} class="product-action-vertical"
                                     if isLoggedIn {
                                         hx-get={fmt.Sprintf("/add-remove-watchlist/?item_id=%s",item.ID)}             
                                         hx-swap="innerHtml"
                                         hx-trigger="click"
                                         hx-indicator=".htmx-loader"
+                                        hx-target={fmt.Sprintf("#%s",item.ID)}             
                                     }
                                 >
                                     if len(item.Watchlists) > 0 {
