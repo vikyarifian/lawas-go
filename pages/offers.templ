@@ -96,7 +96,7 @@ templ Offers(items []models.Item, token dto.Token, isLoggedIn bool) {
                                             if item.Bids[0].Cart == nil {
                                                 <button id={fmt.Sprintf("approve-bid-button-%v", item.Bids[0].No)} class="btn btn-block btn-outline-primary-2"
                                                     hx-disabled-elt={fmt.Sprintf("#approve-bid-button-%v", item.Bids[0].No)}
-                                                    hx-get={fmt.Sprintf("/approve-bid-bid?item_id=%s&bid_id=%s&user_id=%s&bid_no=%v",item.ID,item.Bids[0].ID,item.Bids[0].UserID, item.Bids[0].No)}
+                                                    hx-get={fmt.Sprintf("/approve-bid?item_id=%s&bid_id=%s&user_id=%s&bid_no=%v",item.ID,item.Bids[0].ID,item.Bids[0].UserID, item.Bids[0].No)}
                                                     hx-swap="none"
                                                     hx-trigger="click"
                                                     hx-target-400="#error_approve"
@@ -105,19 +105,23 @@ templ Offers(items []models.Item, token dto.Token, isLoggedIn bool) {
                                                 <span id={fmt.Sprintf("error_approve_bid_%v", item.Bids[0].No)}></span>
                                                 <span id={fmt.Sprintf("success_approve_bid_%v", item.Bids[0].No)}></span>
                                             } else {
-                                                if item.Bids[0].Cart == nil && item.Bids[0].Cart.Payment == nil && item.Bids[0].Cart.Payment.Status == "O" {
-                                                    <button id={fmt.Sprintf("approve-pay-button-%v", item.Bids[0].No)} class="btn btn-block btn-outline-primary-2"
-                                                        hx-disabled-elt={fmt.Sprintf("#approve-pay-button-%v", item.Bids[0].No)}
-                                                        hx-get={fmt.Sprintf("/approve-pay-payment?item_id=%s&bid_id=%s&user_id=%s&bid_no=%v",item.ID,item.Bids[0].ID,item.Bids[0].UserID, item.Bids[0].No)}
-                                                        hx-swap="none"
-                                                        hx-trigger="click"
-                                                        hx-target-400="#error_approve"
-                                                        hx-indicator=".htmx-loader"
-                                                    ><i class="la la-thumbs-up"></i>Approve Payment</button>
-                                                    <span id={fmt.Sprintf("error_approve_pay_%v", item.Bids[0].No)}></span>
-                                                    <span id={fmt.Sprintf("success_approve_pay_%v", item.Bids[0].No)}></span>
-                                                } else {
+                                                if item.Bids[0].Cart.Payment == nil {
                                                     <span class="in-stock">Waiting payment</span>
+                                                } else {
+                                                    if item.Bids[0].Cart.Payment.Status == "O" {
+                                                        <button id={fmt.Sprintf("approve-pay-button-%v", item.Bids[0].No)} class="btn btn-block btn-outline-primary-2"
+                                                            hx-disabled-elt={fmt.Sprintf("#approve-pay-button-%v", item.Bids[0].No)}
+                                                            hx-get={fmt.Sprintf("/approve-payment?item_id=%s&pay_id=%s&user_id=%s&pay_no=%v",item.ID,item.Bids[0].Cart.Payment.ID,item.UserID,item.Bids[0].Cart.Payment.No)}
+                                                            hx-swap="none"
+                                                            hx-trigger="click"
+                                                            hx-target-400="#error_approve"
+                                                            hx-indicator=".htmx-loader"
+                                                        ><i class="la la-thumbs-up"></i>Approve Payment</button>
+                                                        <span id={fmt.Sprintf("error_approve_pay_%v", item.Bids[0].No)}></span>
+                                                        <span id={fmt.Sprintf("success_approve_pay_%v", item.Bids[0].No)}></span>
+                                                    } else {
+                                                        <span style="font-size: 20px;top:3rem;"><i class="la la-check-circle in-stock"></i></span>&nbsp;Completed
+                                                    }                                                     
                                                 }
                                             }
                                             

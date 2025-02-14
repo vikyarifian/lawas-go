@@ -367,35 +367,30 @@ func WebRoutes(app *fiber.App) {
 		return utils.Render(c, components.SuccessAlert("Success!", "approve_bid_"+bidNo), templ.WithStatus(http.StatusOK))
 	})
 
-	// app.Get("/approve-payment", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
-	// 	var token dto.Token
-	// 	var payment models.Payment
-	// 	payNo := c.Query("pay_no")
-	// 	payID := c.Query("pay_id")
-	// 	userID := c.Query("user_id")
-	// 	itemID := c.Query("item_id")
-	// 	token, _ = auth.IsAuthenticated(c)
-	// 	if userID == token.UserID {
-	// 		return utils.Render(c, components.ErrorAlert("Approve failed!", "approve_bid_"+payNo), templ.WithStatus(http.StatusBadRequest))
-	// 	}
-	// 	db.MySql.Where("id=?", payID).First(&payment)
-	// 	if bidID != bids[0].ID {
-	// 		fmt.Println(bids[0].ID)
-	// 		return utils.Render(c, components.ErrorAlert("Approve failed!", "approve_bid_"+bidNo), templ.WithStatus(http.StatusBadRequest))
-	// 	}
-	// 	cart := models.Cart{
-	// 		BidID:     bidID,
-	// 		Status:    "O",
-	// 		CreatedBy: token.Username,
-	// 		UpdatedBy: token.Username,
-	// 	}
-	// 	if err := db.MySql.Save(&cart).Error; err != nil {
-	// 		fmt.Println(err.Error())
-	// 		return utils.Render(c, components.ErrorAlert("Approve failed!", "approve_bid_"+bidNo), templ.WithStatus(http.StatusBadRequest))
-	// 	}
-	// 	c.Response().Header.Set("HX-Redirect", "/offers")
-	// 	return utils.Render(c, components.SuccessAlert("Success!", "approve_bid_"+bidNo), templ.WithStatus(http.StatusOK))
-	// })
+	app.Get("/approve-payment", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
+		var token dto.Token
+		var payment models.Payment
+		payNo := c.Query("pay_no")
+		payID := c.Query("pay_id")
+		userID := c.Query("user_id")
+		// itemID := c.Query("item_id")
+		token, _ = auth.IsAuthenticated(c)
+		if userID != token.UserID {
+			return utils.Render(c, components.ErrorAlert("Approve failed!", "approve_pay_"+payNo), templ.WithStatus(http.StatusBadRequest))
+		}
+		db.MySql.Where("id=?", payID).First(&payment)
+		if payID != payment.ID {
+			fmt.Println(payment.ID)
+			return utils.Render(c, components.ErrorAlert("Approve failed!", "approve_pay_"+payNo), templ.WithStatus(http.StatusBadRequest))
+		}
+		payment.Status = "A"
+		if err := db.MySql.Save(&payment).Error; err != nil {
+			fmt.Println(err.Error())
+			return utils.Render(c, components.ErrorAlert("Approve failed!", "approve_pay_"+payNo), templ.WithStatus(http.StatusBadRequest))
+		}
+		c.Response().Header.Set("HX-Redirect", "/offers")
+		return utils.Render(c, components.SuccessAlert("Success!", "approve_pay_"+payNo), templ.WithStatus(http.StatusOK))
+	})
 
 	app.Post("/sell", auth.AssertAuthenticatedMiddleware, func(c *fiber.Ctx) error {
 		var token dto.Token

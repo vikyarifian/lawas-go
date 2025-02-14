@@ -177,9 +177,9 @@ func Collection(bids []models.Bid, token dto.Token, isLoggedIn bool) templ.Compo
 				if bid.Item.Date.AddDate(0, 0, bid.Item.Duration).Before(time.Now()) {
 					if bid.Item.Bids[0].UserID == token.UserID {
 						if bid.Cart != nil {
-							if bid.Cart != nil {
-								if bid.Cart.Payment != nil && bid.Cart.Payment.Status != "O" {
-									templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<i class=\"la la-check-circle in-stock\"></i>")
+							if bid.Cart.Payment != nil {
+								if bid.Cart.Payment.Status != "O" {
+									templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<span style=\"font-size: 20px;top:3rem;\"><i class=\"la la-check-circle in-stock\"></i></span>&nbsp;Completed")
 									if templ_7745c5c3_Err != nil {
 										return templ_7745c5c3_Err
 									}
