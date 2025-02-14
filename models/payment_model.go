@@ -46,9 +46,9 @@ type Payment struct {
 // 	`ship_postal_code` VARCHAR(45) NULL DEFAULT ' ',
 // 	`ship_country` VARCHAR(45) NULL DEFAULT ' ',
 // 	`status` VARCHAR(1) NOT NULL DEFAULT 'O' COMMENT 'O=open,C=close',
+//  `notes` TEXT NULL,
 // 	`created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
 // 	`created_by` VARCHAR(25) NULL DEFAULT NULL,
 // 	`updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-//  `notes` TEXT NULL,
-// 	`status_copy1` VARCHAR(25) NULL DEFAULT NULL,
+// 	`updated_by` VARCHAR(25) NULL DEFAULT NULL,
 // 	PRIMARY KEY (`no`));

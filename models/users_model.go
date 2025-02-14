@@ -19,12 +19,12 @@ type User struct {
 }
 
 // DELIMITER $$
-// CREATE TRIGGER ti_users
-// BEFORE INSERT ON users
+// CREATE TRIGGER db_lawas.ti_users
+// BEFORE INSERT ON db_lawas.users
 // FOR EACH ROW
 // BEGIN
 //   DECLARE lastid INT;
-//   SET lastid=(SELECT IFNULL(MAX(No),0)+1 FROM users);
+//   SET lastid=(SELECT IFNULL(MAX(No),0)+1 FROM db_lawas.sers);
 //   SET NEW.id = MD5(lastid);
 // END$$
 // DELIMITER ;
