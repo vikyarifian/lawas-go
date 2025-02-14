@@ -208,7 +208,7 @@ func Offers(items []models.Item, token dto.Token, isLoggedIn bool) templ.Compone
 							}
 						}
 					} else {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<i class=\"la la-times-circle\" style=\"color:#df4625;\"></i>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<span style=\"font-size:20px;color:#df4625;\"><svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" width=\"20px\" height=\"20px\"><defs><style>.cls-1{fill:#df4625}</style></defs> <g id=\"calendar_remove\" data-name=\"calendar remove\"><path class=\"cls-1\" d=\"M22.5 3H21V2a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v1h-4V2a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v1H7V2a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v1H2.5A1.5 1.5 0 0 0 1 4.5v18A1.5 1.5 0 0 0 2.5 24h20a1.5 1.5 0 0 0 1.5-1.5v-18A1.5 1.5 0 0 0 22.5 3zM19 2h1v3h-1zm-7 0h1v3h-1zM5 2h1v3H5zM2.5 4H4v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V4h4v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V4h4v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V4h1.5a.5.5 0 0 1 .5.5V8H2V4.5a.5.5 0 0 1 .5-.5zm20 19h-20a.5.5 0 0 1-.5-.5V9h21v13.5a.5.5 0 0 1-.5.5z\"></path> <path class=\"cls-1\" d=\"M15.83 12.12a.51.51 0 0 0-.71.05l-2.62 3.06-2.62-3.06a.5.5 0 1 0-.76.66L11.84 16l-2.72 3.17a.51.51 0 0 0 .05.71.51.51 0 0 0 .71-.05l2.62-3.06 2.62 3.06a.51.51 0 0 0 .71.05.51.51 0 0 0 .05-.71L13.16 16l2.72-3.17a.51.51 0 0 0-.05-.71z\"></path></g></svg></span>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -233,7 +233,7 @@ func Offers(items []models.Item, token dto.Token, isLoggedIn bool) templ.Compone
 							var templ_7745c5c3_Var15 string
 							templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("approve-bid-button-%v", item.Bids[0].No))
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 97, Col: 113}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 107, Col: 113}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 							if templ_7745c5c3_Err != nil {
@@ -246,7 +246,7 @@ func Offers(items []models.Item, token dto.Token, isLoggedIn bool) templ.Compone
 							var templ_7745c5c3_Var16 string
 							templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("#approve-bid-button-%v", item.Bids[0].No))
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 98, Col: 123}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 108, Col: 123}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 							if templ_7745c5c3_Err != nil {
@@ -259,7 +259,7 @@ func Offers(items []models.Item, token dto.Token, isLoggedIn bool) templ.Compone
 							var templ_7745c5c3_Var17 string
 							templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/approve-bid?item_id=%s&bid_id=%s&user_id=%s&bid_no=%v", item.ID, item.Bids[0].ID, item.Bids[0].UserID, item.Bids[0].No))
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 99, Col: 190}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 109, Col: 190}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 							if templ_7745c5c3_Err != nil {
@@ -272,7 +272,7 @@ func Offers(items []models.Item, token dto.Token, isLoggedIn bool) templ.Compone
 							var templ_7745c5c3_Var18 string
 							templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("error_approve_bid_%v", item.Bids[0].No))
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 105, Col: 110}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 115, Col: 110}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 							if templ_7745c5c3_Err != nil {
@@ -285,7 +285,7 @@ func Offers(items []models.Item, token dto.Token, isLoggedIn bool) templ.Compone
 							var templ_7745c5c3_Var19 string
 							templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("success_approve_bid_%v", item.Bids[0].No))
 							if templ_7745c5c3_Err != nil {
-								return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 106, Col: 112}
+								return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 116, Col: 112}
 							}
 							_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 							if templ_7745c5c3_Err != nil {
@@ -310,7 +310,7 @@ func Offers(items []models.Item, token dto.Token, isLoggedIn bool) templ.Compone
 									var templ_7745c5c3_Var20 string
 									templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("approve-pay-button-%v", item.Bids[0].No))
 									if templ_7745c5c3_Err != nil {
-										return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 112, Col: 121}
+										return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 122, Col: 121}
 									}
 									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 									if templ_7745c5c3_Err != nil {
@@ -323,7 +323,7 @@ func Offers(items []models.Item, token dto.Token, isLoggedIn bool) templ.Compone
 									var templ_7745c5c3_Var21 string
 									templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("#approve-pay-button-%v", item.Bids[0].No))
 									if templ_7745c5c3_Err != nil {
-										return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 113, Col: 131}
+										return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 123, Col: 131}
 									}
 									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 									if templ_7745c5c3_Err != nil {
@@ -336,7 +336,7 @@ func Offers(items []models.Item, token dto.Token, isLoggedIn bool) templ.Compone
 									var templ_7745c5c3_Var22 string
 									templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/approve-payment?item_id=%s&pay_id=%s&user_id=%s&pay_no=%v", item.ID, item.Bids[0].Cart.Payment.ID, item.UserID, item.Bids[0].Cart.Payment.No))
 									if templ_7745c5c3_Err != nil {
-										return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 114, Col: 219}
+										return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 124, Col: 219}
 									}
 									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 									if templ_7745c5c3_Err != nil {
@@ -349,7 +349,7 @@ func Offers(items []models.Item, token dto.Token, isLoggedIn bool) templ.Compone
 									var templ_7745c5c3_Var23 string
 									templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("error_approve_pay_%v", item.Bids[0].No))
 									if templ_7745c5c3_Err != nil {
-										return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 120, Col: 118}
+										return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 130, Col: 118}
 									}
 									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 									if templ_7745c5c3_Err != nil {
@@ -362,7 +362,7 @@ func Offers(items []models.Item, token dto.Token, isLoggedIn bool) templ.Compone
 									var templ_7745c5c3_Var24 string
 									templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("success_approve_pay_%v", item.Bids[0].No))
 									if templ_7745c5c3_Err != nil {
-										return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 121, Col: 120}
+										return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 131, Col: 120}
 									}
 									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 									if templ_7745c5c3_Err != nil {
@@ -381,7 +381,7 @@ func Offers(items []models.Item, token dto.Token, isLoggedIn bool) templ.Compone
 							}
 						}
 					} else {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<i class=\"la la-times-circle\" style=\"color:#df4625;\"></i>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<span style=\"font-size:20px\"><i class=\"la la-times-circle\" style=\"color:#df4625;\"></i></span>&nbsp;Failed")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -394,7 +394,7 @@ func Offers(items []models.Item, token dto.Token, isLoggedIn bool) templ.Compone
 					var templ_7745c5c3_Var25 string
 					templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(item.Date.Format("January, 02 2006"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 133, Col: 100}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 143, Col: 100}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 					if templ_7745c5c3_Err != nil {
@@ -407,7 +407,7 @@ func Offers(items []models.Item, token dto.Token, isLoggedIn bool) templ.Compone
 					var templ_7745c5c3_Var26 string
 					templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(item.Date.AddDate(0, 0, item.Duration).Format("January, 02 2006"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 133, Col: 170}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/offers.templ`, Line: 143, Col: 170}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 					if templ_7745c5c3_Err != nil {
@@ -429,7 +429,7 @@ func Offers(items []models.Item, token dto.Token, isLoggedIn bool) templ.Compone
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = components.Layout(token, isLoggedIn, "Collections").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = components.Layout(token, isLoggedIn, "Offers").Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

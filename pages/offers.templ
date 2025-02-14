@@ -11,7 +11,7 @@ import (
 )
 
 templ Offers(items []models.Item, token dto.Token, isLoggedIn bool) {
-    @components.Layout(token, isLoggedIn, "Collections") {
+    @components.Layout(token, isLoggedIn, "Offers") {
         <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
             <div class="container">
                 <ol class="breadcrumb">
@@ -83,7 +83,17 @@ templ Offers(items []models.Item, token dto.Token, isLoggedIn bool) {
                                                     {strings.Split(item.Bids[0].User.Name," ")[1][0:1]}{strings.Repeat("*", len(strings.Split(item.Bids[0].User.Name," ")[1])-1)}
                                                 }
                                         } else {
-                                            <i class="la la-times-circle" style="color:#df4625;"></i>
+                                            <span style="font-size:20px;color:#df4625;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20px" height="20px">
+                                                    <defs><style>.cls-1{fill:#df4625}</style>
+                                                    </defs>
+                                                    <g id="calendar_remove" data-name="calendar remove">
+                                                        <path class="cls-1" d="M22.5 3H21V2a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v1h-4V2a1 1 0 0 0-1-1h-1a1 1 0 0 0-1 1v1H7V2a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v1H2.5A1.5 1.5 0 0 0 1 4.5v18A1.5 1.5 0 0 0 2.5 24h20a1.5 1.5 0 0 0 1.5-1.5v-18A1.5 1.5 0 0 0 22.5 3zM19 2h1v3h-1zm-7 0h1v3h-1zM5 2h1v3H5zM2.5 4H4v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V4h4v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V4h4v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1V4h1.5a.5.5 0 0 1 .5.5V8H2V4.5a.5.5 0 0 1 .5-.5zm20 19h-20a.5.5 0 0 1-.5-.5V9h21v13.5a.5.5 0 0 1-.5.5z"/>
+                                                        <path class="cls-1" d="M15.83 12.12a.51.51 0 0 0-.71.05l-2.62 3.06-2.62-3.06a.5.5 0 1 0-.76.66L11.84 16l-2.72 3.17a.51.51 0 0 0 .05.71.51.51 0 0 0 .71-.05l2.62-3.06 2.62 3.06a.51.51 0 0 0 .71.05.51.51 0 0 0 .05-.71L13.16 16l2.72-3.17a.51.51 0 0 0-.05-.71z"/>
+                                                    </g>
+                                                </svg>
+                                                // <i class="la la-calendar-times" style="color:#df4625;"></i>
+                                            </span>
                                         }
                                     } else {
                                         <i class="la la-history in-stock" style="font-size: 2rem;" alt="Ongoing"></i>
@@ -126,7 +136,7 @@ templ Offers(items []models.Item, token dto.Token, isLoggedIn bool) {
                                             }
                                             
                                         } else {
-                                            <i class="la la-times-circle" style="color:#df4625;"></i>
+                                            <span style="font-size:20px"><i class="la la-times-circle" style="color:#df4625;"></i></span>&nbsp;Failed
                                         }
                                         
                                     } else {

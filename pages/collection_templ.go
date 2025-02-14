@@ -159,7 +159,7 @@ func Collection(bids []models.Bid, token dto.Token, isLoggedIn bool) templ.Compo
 							return templ_7745c5c3_Err
 						}
 					} else {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<i class=\"la la-times-circle\" style=\"color:#df4625;\"></i>")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<span style=\"font-size:20px\"><i class=\"la la-times-circle\" style=\"color:#df4625;\"></i></span>")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
