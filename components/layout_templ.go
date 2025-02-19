@@ -104,7 +104,7 @@ func HtmlWrapper(token dto.Token, isLoggedIn bool, title string) templ.Component
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"screenloading htmx-loader htmx-indicator\">Loading&#8230;</div></main><!-- End .main -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"screenloading htmx-loader htmx-indicator\">Loading&#8230;</div></main><!-- End .main --><!-- Mobile Menu --><div class=\"mobile-menu-overlay\"></div><!-- End .mobil-menu-overlay -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -112,12 +112,8 @@ func HtmlWrapper(token dto.Token, isLoggedIn bool, title string) templ.Component
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!-- Mobile Menu --><div class=\"mobile-menu-overlay\"></div><!-- End .mobil-menu-overlay --><div class=\"mobile-menu-container mobile-menu-light\"><div class=\"mobile-menu-wrapper\"><span class=\"mobile-menu-close\"><i class=\"icon-close\"></i></span><form action=\"#\" method=\"get\" class=\"mobile-search\"><label for=\"mobile-search\" class=\"sr-only\">Search</label> <input type=\"search\" class=\"form-control\" name=\"mobile-search\" id=\"mobile-search\" placeholder=\"Search in...\" required> <button class=\"btn btn-primary\" type=\"submit\"><i class=\"icon-search\"></i></button></form><ul class=\"nav nav-pills-mobile nav-border-anim\" role=\"tablist\"><li class=\"nav-item\"><a class=\"nav-link active\" id=\"mobile-menu-link\" data-toggle=\"tab\" href=\"#mobile-menu-tab\" role=\"tab\" aria-controls=\"mobile-menu-tab\" aria-selected=\"true\">Menu</a></li></ul><div class=\"tab-content\"><div class=\"tab-pane fade show active\" id=\"mobile-menu-tab\" role=\"tabpanel\" aria-labelledby=\"mobile-menu-link\"><nav class=\"mobile-nav\"><ul class=\"mobile-menu\"><li class=\"active\"><a href=\"/\">Home</a></li><li><a href=\"/market\">Market</a></li><li><a href=\"/contact\" class=\"sf-with-ul\">Contact</a></li><li><a href=\"/about\">About</a></li><li><a href=\"/faq\">FAQs</a></li></ul></nav><!-- End .mobile-nav --></div><!-- .End .tab-pane --></div><!-- End .tab-content --></div><!-- End .mobile-menu-wrapper --></div><!-- End .mobile-menu-container -->")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
 		if isLoggedIn {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div id=\"sell-popup\" hx-get=\"/sell\" hx-swap=\"innerHtml\" hx-target=\"#sell-popup\" hx-indicator=\".htmx-loader\" hx-trigger=\"load\"></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div id=\"sell-popup\" hx-get=\"/sell\" hx-swap=\"innerHtml\" hx-target=\"#sell-popup\" hx-indicator=\".htmx-loader\" hx-trigger=\"load\"></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -127,7 +123,7 @@ func HtmlWrapper(token dto.Token, isLoggedIn bool, title string) templ.Component
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></body><script>\r\n            document.addEventListener(\"DOMContentLoaded\", (event) => {\r\n                document.body.addEventListener('htmx:beforeSwap', function(evt) {\r\n                    if (evt.detail.xhr.status === 400) {\r\n                        evt.detail.shouldSwap = true;\r\n                        evt.detail.isError = false;\r\n                    }\r\n                });\r\n            })\t\r\n        </script></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</div><div class=\"mobile-menu-container mobile-menu-light\"><div class=\"mobile-menu-wrapper\"><span class=\"mobile-menu-close\"><i class=\"icon-close\"></i></span><div class=\"tab-content\"><div class=\"tab-pane fade show active\" id=\"mobile-menu-tab\" role=\"tabpanel\" aria-labelledby=\"mobile-menu-link\"><nav class=\"mobile-nav\"><ul class=\"mobile-menu\"><li class=\"active\"><a href=\"/\">Home</a></li><li><a href=\"/market\">Market</a></li><li><a href=\"/contact\" class=\"sf-with-ul\">Contact</a></li><li><a href=\"/about\">About</a></li><li><a href=\"/faq\">FAQs</a></li></ul></nav><!-- End .mobile-nav --></div><!-- .End .tab-pane --></div><!-- End .tab-content --></div><!-- End .mobile-menu-wrapper --></div><!-- End .mobile-menu-container --></body><script>\r\n            document.addEventListener(\"DOMContentLoaded\", (event) => {\r\n                document.body.addEventListener('htmx:beforeSwap', function(evt) {\r\n                    if (evt.detail.xhr.status === 400) {\r\n                        evt.detail.shouldSwap = true;\r\n                        evt.detail.isError = false;\r\n                    }\r\n                });\r\n            })\t\r\n        </script></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

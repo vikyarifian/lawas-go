@@ -8,8 +8,10 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "lawas-go/models"
-import "lawas-go/dto"
+import (
+	"lawas-go/dto"
+	"lawas-go/models"
+)
 
 func HtmlSell(token dto.Token, categories []models.Category, currencies []models.Currency) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -45,7 +47,7 @@ func HtmlSell(token dto.Token, categories []models.Category, currencies []models
 				var templ_7745c5c3_Var2 string
 				templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(cate.ID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/sell.templ`, Line: 49, Col: 97}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/sell.templ`, Line: 51, Col: 97}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 				if templ_7745c5c3_Err != nil {
@@ -58,7 +60,7 @@ func HtmlSell(token dto.Token, categories []models.Category, currencies []models
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(cate.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/sell.templ`, Line: 49, Col: 109}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/sell.templ`, Line: 51, Col: 109}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -81,7 +83,7 @@ func HtmlSell(token dto.Token, categories []models.Category, currencies []models
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(curr.ID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/sell.templ`, Line: 81, Col: 97}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/sell.templ`, Line: 83, Col: 97}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -94,7 +96,7 @@ func HtmlSell(token dto.Token, categories []models.Category, currencies []models
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(curr.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/sell.templ`, Line: 81, Col: 109}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/sell.templ`, Line: 83, Col: 109}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
