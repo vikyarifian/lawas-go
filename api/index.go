@@ -43,7 +43,7 @@ func handler() http.HandlerFunc {
 		return c.Next()
 	})
 
-	routes.ApiRoutes(app)
+	// routes.ApiRoutes(app)
 	routes.WebRoutes(app)
 
 	return adaptor.FiberApp(app)
