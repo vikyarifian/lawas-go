@@ -24,7 +24,7 @@ import (
 func main() {
 
 	config.LoadEnv()
-	db.ConnectDB()
+	db.ConnectDBVercel()
 
 	app := fiber.New(fiber.Config{
 		Network: fiber.NetworkTCP,
