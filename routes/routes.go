@@ -93,11 +93,12 @@ func WebRoutes(app *fiber.App) {
 	})
 
 	app.Get("/market", func(c *fiber.Ctx) error {
+		category := c.Query("category")
 		var categories []models.Category
 		db.MySql.Order("name").Find(&categories)
 		var token dto.Token
 		token, _ = auth.IsAuthenticated(c)
-		return utils.Render(c, pages.Market(categories, token, token.IsAuth))
+		return utils.Render(c, pages.Market(categories, category, token, token.IsAuth))
 	})
 
 	app.Get("/items", func(c *fiber.Ctx) error {
