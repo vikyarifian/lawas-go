@@ -24,3 +24,17 @@ func ConnectDB() {
 	MySql = db
 
 }
+
+func ConnectDBVercel() {
+
+	dsn := os.Getenv("DB_USER_VERCEL") + ":" + os.Getenv("DB_PASS_VERCEL") + "@tcp(" + os.Getenv("DB_HOST_VERCEL") + ":" + os.Getenv("DB_PORT_VERCEL") + ")/" + os.Getenv("DB_NAME_VERCEL") + "?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal("Failed To Connect Database MySQL  ("+os.Getenv("DB_HOST_VERCEL")+"/"+os.Getenv("DB_NAME_VERCEL")+")", err.Error())
+		os.Exit(2)
+	}
+
+	log.Println("Connected To MySql Database Successfully (" + os.Getenv("DB_HOST_VERCEL") + "/" + os.Getenv("DB_NAME_VERCEL") + ")")
+	MySql = db
+
+}
