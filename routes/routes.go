@@ -183,7 +183,14 @@ func WebRoutes(app *fiber.App) {
 			return utils.Render(c, components.ErrorAlert("Item not found!", "bid"), templ.WithStatus(http.StatusBadRequest))
 		}
 
+		maxId := db.MySql.Table("bids").Select("max(no)").Row()
+		_ = maxId.Scan(&bid.No)
+
+		idhash := utils.GetMD5Hash(strconv.Itoa(bid.No + 1))
+
 		newBid := models.Bid{
+			No:        bid.No + 1,
+			ID:        idhash,
 			ItemID:    bid.ItemID,
 			UserID:    token.UserID,
 			Bid:       bid.Bid,
@@ -353,7 +360,16 @@ func WebRoutes(app *fiber.App) {
 			fmt.Println(bids[0].ID)
 			return utils.Render(c, components.ErrorAlert("Approve failed!", "approve_bid_"+bidNo), templ.WithStatus(http.StatusBadRequest))
 		}
+
+		no := 0
+		maxId := db.MySql.Table("carts").Select("max(no)").Row()
+		_ = maxId.Scan(&no)
+
+		idhash := utils.GetMD5Hash(strconv.Itoa(no + 1))
+
 		cart := models.Cart{
+			No:        no + 1,
+			ID:        idhash,
 			BidID:     bidID,
 			Status:    "O",
 			CreatedBy: token.Username,
@@ -466,8 +482,14 @@ func WebRoutes(app *fiber.App) {
 			}
 			return utils.Render(c, components.AddRemoveWatchlist("", token.IsAuth))
 		} else {
+			no := 0
+			maxId := db.MySql.Table("watchlists").Select("max(no)").Row()
+			_ = maxId.Scan(&no)
+			idhash := utils.GetMD5Hash(strconv.Itoa(no + 1))
 			watchlist.UserID = token.UserID
 			watchlist.ItemID = c.Query("item_id")
+			watchlist.No = no + 1
+			watchlist.ID = idhash
 			err := db.MySql.Save(&watchlist).Error
 			if err != nil {
 				fmt.Println(err.Error())
@@ -494,8 +516,14 @@ func WebRoutes(app *fiber.App) {
 		tipe := c.Query("tipe")
 		token, _ = auth.IsAuthenticated(c)
 		if err := db.MySql.Where("user_id=?", token.UserID).First(&address); err != nil {
+			no := 0
+			maxId := db.MySql.Table("addresses").Select("max(no)").Row()
+			_ = maxId.Scan(&no)
+			idhash := utils.GetMD5Hash(strconv.Itoa(no + 1))
 			address = models.Address{}
 			address.UserID = token.UserID
+			address.No = no + 1
+			address.ID = idhash
 		}
 		// return utils.Render(c, components.ErrorAlert("errr", tipe), templ.WithStatus(http.StatusBadRequest))
 		if err := c.BodyParser(&p); err != nil {
@@ -734,6 +762,12 @@ func WebRoutes(app *fiber.App) {
 		if len(strings.Trim(password, " ")) < 6 {
 			return utils.Render(c, components.ErrorAlert("Password must be at least 6 characters!", "register"), templ.WithStatus(http.StatusBadRequest))
 		}
+
+		no := 0
+		maxId := db.MySql.Table("users").Select("max(no)").Row()
+		_ = maxId.Scan(&no)
+		idhash := utils.GetMD5Hash(strconv.Itoa(no + 1))
+
 		t := time.Now()
 		hash, _ := auth.HashPassword(password)
 		newUser.Username = username
@@ -741,6 +775,8 @@ func WebRoutes(app *fiber.App) {
 		newUser.Name = username
 		newUser.Email = email
 		// newUser.Phone = phone
+		newUser.No = no + 1
+		newUser.ID = idhash
 		newUser.Level = "user"
 		newUser.CreatedAt = &t
 		newUser.CreatedBy = newUser.Username

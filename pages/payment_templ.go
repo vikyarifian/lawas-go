@@ -75,7 +75,7 @@ func Payment(payment models.Payment, token dto.Token, isLoggedIn bool) templ.Com
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(payment.Reff)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/payment.templ`, Line: 32, Col: 52}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/payment.templ`, Line: 33, Col: 52}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -88,7 +88,7 @@ func Payment(payment models.Payment, token dto.Token, isLoggedIn bool) templ.Com
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(payment.Cart.Bid.Item.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/payment.templ`, Line: 41, Col: 55}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/payment.templ`, Line: 42, Col: 55}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -101,7 +101,7 @@ func Payment(payment models.Payment, token dto.Token, isLoggedIn bool) templ.Com
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(payment.Cart.Bid.Item.Currency.Code)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/payment.templ`, Line: 42, Col: 64}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/payment.templ`, Line: 43, Col: 64}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -110,7 +110,7 @@ func Payment(payment models.Payment, token dto.Token, isLoggedIn bool) templ.Com
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", payment.Cart.Bid.Bid))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/payment.templ`, Line: 42, Col: 107}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `pages/payment.templ`, Line: 43, Col: 107}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
