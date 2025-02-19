@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"lawas-go/config"
 	"lawas-go/db"
 	"lawas-go/routes"
 	"net/http"
@@ -22,7 +21,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 // building the fiber application
 func handler() http.HandlerFunc {
-	config.LoadEnv()
+	// config.LoadEnv()
 	db.ConnectDBVercel()
 
 	app := fiber.New(fiber.Config{
