@@ -11,7 +11,7 @@ import (
     "strconv"
 )
 
-templ Market(categories []models.Category, token dto.Token, isLoggedIn bool) {
+templ Market(categories []models.Category, category string, token dto.Token, isLoggedIn bool) {
     @components.Layout(token, isLoggedIn, "Market") {
         <nav aria-label="breadcrumb" class="breadcrumb-nav border-0 mb-0">
             <div class="container">
@@ -57,6 +57,9 @@ templ Market(categories []models.Category, token dto.Token, isLoggedIn bool) {
                                                                 hx-target="#item-list"
                                                                 hx-trigger="click"
                                                                 hx-indicator=".htmx-loader"
+                                                                if category==cate.Name {
+                                                                    checked
+                                                                }
                                                             >
                                                             <label class="custom-control-label" for={cate.ID}>{cate.Name}</label>
                                                         </div><!-- End .custom-checkbox -->
@@ -71,7 +74,7 @@ templ Market(categories []models.Category, token dto.Token, isLoggedIn bool) {
                         </div><!-- End .sidebar sidebar-shop -->
                     </aside><!-- End .col-lg-3 -->
                     <div class="col-lg-9" id="item-list" class="row justify-content-center"
-                        hx-get="/items"               
+                        hx-get={fmt.Sprintf("/items?category=%s",category)}            
                         hx-swap="innerHtml"
                         hx-target="#item-list"
                         hx-indicator=".htmx-loader"
