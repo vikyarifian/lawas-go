@@ -12,15 +12,25 @@ require (
 )
 
 require (
+	github.com/cloudinary/cloudinary-go/v2 v2.9.1 // indirect
+	github.com/creasty/defaults v1.7.0 // indirect
 	github.com/fasthttp/websocket v1.5.3 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
+	github.com/go-playground/locales v0.14.1 // indirect
+	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/gofiber/websocket/v2 v2.2.1 // indirect
+	github.com/gorilla/schema v1.4.1 // indirect
+	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/savsgio/gotils v0.0.0-20230208104028-c358bd845dee // indirect
 	github.com/segmentio/asm v1.1.3 // indirect
+	golang.org/x/net v0.34.0 // indirect
 )
 
 require (
 	github.com/a-h/templ v0.3.833 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
+	github.com/cloudinary/cloudinary-go v1.7.0
+	github.com/go-playground/validator/v10 v10.25.0
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.1
 	github.com/google/uuid v1.6.0 // indirect
