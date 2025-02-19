@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"lawas-go/auth"
 	"lawas-go/components"
-	"lawas-go/config"
 	"lawas-go/db"
 	"lawas-go/dto"
 	"lawas-go/models"
@@ -424,10 +423,7 @@ func WebRoutes(app *fiber.App) {
 		}
 
 		formFile, err := file.Open()
-		uploadUrl, err := services.NewMediaUpload().FileUpload(dto.File{File: formFile})
-		if err != nil {
-			println("Error upload: " + err.Error())
-		}
+
 		// media := dto.MediaDto{
 		// 	StatusCode: http.StatusOK,
 		// 	Message:    "success",
@@ -444,12 +440,17 @@ func WebRoutes(app *fiber.App) {
 		file.Filename = idhash + "." + ext[len(ext)-1]
 
 		destination := "assets/images/products/"
-
-		if config.EnvCloudName() != "VERCEL" {
-			if err := c.SaveFile(file, destination+file.Filename); err != nil {
+		photoName := destination + file.Filename
+		// if config.EnvCloudName() != "VERCEL" {
+		if err := c.SaveFile(file, destination+file.Filename); err != nil {
+			// return utils.Render(c, components.ErrorAlert(err.Error(), "sell"), templ.WithStatus(http.StatusBadRequest))
+			uploadUrl, err := services.NewMediaUpload().FileUpload(dto.File{File: formFile})
+			if err != nil {
 				return utils.Render(c, components.ErrorAlert(err.Error(), "sell"), templ.WithStatus(http.StatusBadRequest))
 			}
+			photoName = uploadUrl
 		}
+		// }
 		re := regexp.MustCompile("\\n")
 		item.Description = re.ReplaceAllString(item.Description, "<br>")
 		fmt.Println("Desc: " + item.Description)
@@ -466,15 +467,15 @@ func WebRoutes(app *fiber.App) {
 			Duration:    item.Duration,
 			CurrencyID:  item.CurrencyID,
 			OpenBid:     item.OpenBid,
-			Photo:       destination + file.Filename,
+			Photo:       photoName,
 			Date:        func(t time.Time) *time.Time { return &t }(time.Now()),
 			CreatedBy:   token.Username,
 			UpdatedBy:   token.Username,
 		}
 
-		if config.EnvCloudName() == "VERCEL" {
-			newItem.Photo = uploadUrl
-		}
+		// if config.EnvCloudName() == "VERCEL" {
+		// 	newItem.Photo = uploadUrl
+		// }
 		// print(item.CategoryID + " " + item.CurrencyID)
 		// db.MySql.First(&newItem.Category)
 		// db.MySql.First(&newItem.Currency)
