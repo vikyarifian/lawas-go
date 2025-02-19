@@ -24,7 +24,7 @@ type User struct {
 // FOR EACH ROW
 // BEGIN
 //   DECLARE lastid INT;
-//   SET lastid=(SELECT IFNULL(MAX(No),0)+1 FROM db_lawas.sers);
+//   SET lastid=(SELECT IFNULL(MAX(No),0)+1 FROM db_lawas.users);
 //   SET NEW.id = MD5(lastid);
 // END$$
 // DELIMITER ;
