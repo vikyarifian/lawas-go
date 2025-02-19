@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"lawas-go/auth"
 	"lawas-go/components"
+	"lawas-go/config"
 	"lawas-go/db"
 	"lawas-go/dto"
 	"lawas-go/models"
 	"lawas-go/pages"
+	"lawas-go/services"
 	"lawas-go/utils"
 	"log"
 	"net/http"
@@ -204,7 +206,7 @@ func WebRoutes(app *fiber.App) {
 			return utils.Render(c, components.ErrorAlert(err.Error(), "bid"), templ.WithStatus(http.StatusBadRequest))
 		}
 
-		time.Sleep(100 * time.Millisecond)
+		// time.Sleep(100 * time.Millisecond)
 		c.Response().Header.Set("HX-Redirect", "/item?id="+item.ID)
 		return utils.Render(c, components.SuccessAlert("Success!", "bid"), templ.WithStatus(http.StatusOK))
 
@@ -249,7 +251,7 @@ func WebRoutes(app *fiber.App) {
 		token, _ = auth.IsAuthenticated(c)
 
 		db.MySql.Table("carts").Select("carts.*", "bids.user_id").Joins("LEFT JOIN bids ON bids.id COLLATE utf8mb4_unicode_ci = carts.bid_id").
-			Where("bids.user_id=? and carts.id not in (select cart_id from db_lawas.payments) ", token.UserID).Preload("Bid", func(db *gorm.DB) *gorm.DB {
+			Where("bids.user_id=? and carts.id not in (select cart_id from payments) ", token.UserID).Preload("Bid", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("Item", func(db *gorm.DB) *gorm.DB {
 				return db.Preload("Currency")
 			})
@@ -322,7 +324,7 @@ func WebRoutes(app *fiber.App) {
 		var token dto.Token
 		var cart models.Cart
 		token, _ = auth.IsAuthenticated(c)
-		if err := db.MySql.Where("id=? and id not in (select cart_id from db_lawas.payments)", cartID).Preload("Bid", func(db *gorm.DB) *gorm.DB {
+		if err := db.MySql.Where("id=? and id not in (select cart_id from payments)", cartID).Preload("Bid", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("Item", func(db *gorm.DB) *gorm.DB {
 				return db.Preload("Currency")
 			}).Preload("User", func(db *gorm.DB) *gorm.DB {
@@ -421,6 +423,19 @@ func WebRoutes(app *fiber.App) {
 			return utils.Render(c, components.ErrorAlert(err.Error(), "sell"), templ.WithStatus(http.StatusBadRequest))
 		}
 
+		formFile, err := file.Open()
+		uploadUrl, err := services.NewMediaUpload().FileUpload(dto.File{File: formFile})
+		if err != nil {
+			println("Error upload: " + err.Error())
+		}
+		// media := dto.MediaDto{
+		// 	StatusCode: http.StatusOK,
+		// 	Message:    "success",
+		// 	Data:       &fiber.Map{"data": uploadUrl},
+		// }
+		// responseBody, err := io.ReadAll(uploadUrl)
+		// println("Media: " + uploadUrl)
+		// println(media.Data)
 		maxId := db.MySql.Table("items").Select("max(no)").Row()
 		_ = maxId.Scan(&item.No)
 
@@ -429,8 +444,11 @@ func WebRoutes(app *fiber.App) {
 		file.Filename = idhash + "." + ext[len(ext)-1]
 
 		destination := "assets/images/products/"
-		if err := c.SaveFile(file, destination+file.Filename); err != nil {
-			return utils.Render(c, components.ErrorAlert(err.Error(), "sell"), templ.WithStatus(http.StatusBadRequest))
+
+		if config.EnvCloudName() != "VERCEL" {
+			if err := c.SaveFile(file, destination+file.Filename); err != nil {
+				return utils.Render(c, components.ErrorAlert(err.Error(), "sell"), templ.WithStatus(http.StatusBadRequest))
+			}
 		}
 		re := regexp.MustCompile("\\n")
 		item.Description = re.ReplaceAllString(item.Description, "<br>")
@@ -453,7 +471,11 @@ func WebRoutes(app *fiber.App) {
 			CreatedBy:   token.Username,
 			UpdatedBy:   token.Username,
 		}
-		print(item.CategoryID + " " + item.CurrencyID)
+
+		if config.EnvCloudName() == "VERCEL" {
+			newItem.Photo = uploadUrl
+		}
+		// print(item.CategoryID + " " + item.CurrencyID)
 		// db.MySql.First(&newItem.Category)
 		// db.MySql.First(&newItem.Currency)
 
@@ -462,7 +484,7 @@ func WebRoutes(app *fiber.App) {
 			return utils.Render(c, components.ErrorAlert(err.Error(), "sell"), templ.WithStatus(http.StatusBadRequest))
 		}
 
-		time.Sleep(500 * time.Millisecond)
+		// time.Sleep(500 * time.Millisecond)
 		c.Response().Header.Set("HX-Redirect", "/item?id="+newItem.ID)
 		return utils.Render(c, components.SuccessAlert("Success!", "sell"), templ.WithStatus(http.StatusOK))
 	})
