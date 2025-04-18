@@ -3,52 +3,34 @@ package config
 import (
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
 
 func LoadEnv() {
-	if err := godotenv.Load("./.env"); err != nil {
-		log.Fatal("Error Is Loading Env")
-	}
-}
-
-func AppEnv() string {
-	err := godotenv.Load()
+	appPath, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal(err)
 	}
-	return os.Getenv("APP_ENV")
-}
 
-func EnvCloudName() string {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-	return os.Getenv("CLOUDINARY_CLOUD_NAME")
-}
+	appPath = strings.ReplaceAll(appPath, "\\bin", "")
+	appPath = strings.ReplaceAll(appPath, "\\main", "")
+	appPath = strings.ReplaceAll(appPath, "/bin", "")
+	appPath = strings.ReplaceAll(appPath, "/main", "")
+	appPath = strings.ReplaceAll(appPath, "\\", "/")
 
-func EnvCloudAPIKey() string {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-	return os.Getenv("CLOUDINARY_API_KEY")
-}
+	os.Setenv("APP_PATH", appPath+"/")
 
-func EnvCloudAPISecret() string {
-	err := godotenv.Load()
+	err = godotenv.Load(appPath + ".env")
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		err = godotenv.Load(appPath + "/.env")
+		if err != nil {
+			err = godotenv.Load(appPath + "\\.env")
+			if err != nil {
+				log.Fatal("Error loading .env file path: ", appPath)
+			}
+		}
 	}
-	return os.Getenv("CLOUDINARY_API_SECRET")
-}
-
-func EnvCloudUploadFolder() string {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-	return os.Getenv("CLOUDINARY_UPLOAD_FOLDER")
 }

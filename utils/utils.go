@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"os"
 	"time"
 
 	"github.com/a-h/templ"
@@ -25,13 +26,13 @@ func ImageUploadHelper(input interface{}) (string, error) {
 	defer cancel()
 
 	//create cloudinary instance
-	cld, err := cloudinary.NewFromParams("dtag6mmq2", "185111165781156", "VzUV1nDf3lUf6Mk_GDvS7KD3uLM")
+	cld, err := cloudinary.NewFromParams(os.Getenv("CLOUDINARY_CLOUD_NAME"), os.Getenv("CLOUDINARY_API_KEY"), os.Getenv("CLOUDINARY_API_SECRET"))
 	if err != nil {
 		return "", err
 	}
 
 	//upload file
-	uploadParam, err := cld.Upload.Upload(ctx, input, uploader.UploadParams{Folder: "go-cloudinary"})
+	uploadParam, err := cld.Upload.Upload(ctx, input, uploader.UploadParams{Folder: os.Getenv("CLOUDINARY_UPLOAD_FOLDER")})
 	if err != nil {
 		return "", err
 	}
