@@ -43,15 +43,15 @@ func itemList(token dto.Token, page int, size int, sort string, count int64, cat
 	return items, count, err
 }
 
-func ApiRoutes(app *fiber.App) {
+// func ApiRoutes(app *fiber.App) {
 
-	// api := app.Group("/api/v1")
-	app.Get("/a", func(c *fiber.Ctx) error {
-		var u models.User
-		db.MySql.Find(&u)
-		return c.Status(fiber.StatusOK).JSON(u)
-	})
-}
+// 	// api := app.Group("/api/v1")
+// 	app.Get("/a", func(c *fiber.Ctx) error {
+// 		var u models.User
+// 		db.MySql.Find(&u)
+// 		return c.Status(fiber.StatusOK).JSON(u)
+// 	})
+// }
 
 func WebRoutes(app *fiber.App) {
 

@@ -14,6 +14,7 @@ import (
 	"math/rand/v2"
 	"net"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -32,9 +33,9 @@ func main() {
 
 	app.Use(logger.New())
 
-	app.Static("/assets", "./assets")
-	app.Static("/lib", "./lib")
-	app.Static("/popup", "./popup")
+	app.Static("/assets", os.Getenv("APP_PATH")+"assets")
+	app.Static("/lib", os.Getenv("APP_PATH")+"lib")
+	app.Static("/popup", os.Getenv("APP_PATH")+"popup")
 
 	app.Use(func(c *fiber.Ctx) error {
 		c.Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
@@ -44,7 +45,7 @@ func main() {
 		return c.Next()
 	})
 
-	routes.ApiRoutes(app)
+	// routes.ApiRoutes(app)
 	routes.WebRoutes(app)
 	listen, _ := net.Listen("tcp", ":7632")
 	// BulkUser()
